@@ -1,29 +1,14 @@
 # README #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+This is the Asternic CDR IssabelPBX Module
 
 ### What is this repository for? ###
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+* Provides an alternative way to present CDR reports for Issabel
 
 ### How do I get set up? ###
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+Select the Security option from your Issabel menu and be sure to allow unembed access to Issabel PBX.
+Then go to http://your.server/admin to log into IssabelPBX directly, and from the module manager you 
+will be able to upload the module and install it on your system.
 
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
