@@ -29,13 +29,21 @@ jobs:
         run: |
           VERSION=$(grep version ${{ github.workspace }}/module.xml  | head -n 1 | sed 's/[></]//g' | sed 's/version//g' | sed 's/ //g')
           echo $VERSION
-          apt-get -y install sshpass
           rm -rf /tmp/asternic_cdr >/dev/null
           mkdir /tmp/asternic_cdr
           cp -pr ${{ github.workspace }}/* /tmp/asternic_cdr
           cd /tmp
           tar zcvf asternic_cdr-${VERSION}.tgz asternic_cdr
-          sshpass -p ${{ secrets.REPOPASSWORD }} scp -P ${{ secrets.REPOPORT }} asternic_cdr-${VERSION}.tgz ${{ secrets.REPOUSER }}@${{ secrets.REPOHOST }}:/tmp/  
           echo "::set-output name=TGZFILE::asternic_cdr-${VERSION}.tgz"
+      - name: copy file via ssh 
+        uses: asternic/scp-action@master
+        with:
+          host: ${{ secrets.REPOHOST }}
+          username: ${{ secrets.REPOUSER }}
+          port: ${{ secrets.REPOPORT }}
+          password: ${{ secrets.REPOPASSWORD }}
+          source: ${{ steps.createtgz.outputs.TGZFILE }}
+          target: "/tmp"
+
           
           
