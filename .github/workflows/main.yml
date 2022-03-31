@@ -39,8 +39,12 @@ jobs:
           tar zcvf asternic_cdr-${VERSION}.tgz asternic_cdr
           ls -la /tmp/asternic_cdr-*
           
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v2
+      - name: copy file via ssh 
+        uses: asternic/scp-action@master
         with:
-         name: asternic_cdr_module
-         path: /tmp/asternic*.tgz
+          host: ${{ secrets.REPOHOST }}
+          username: ${{ secrets.REPOUSER }}
+          port: ${{ secrets.REPOPORT }}
+          password: ${{ secrets.REPOPASSWORD }}
+          source: /tmp/asternic_cdr*
+          target: "/tmp"
