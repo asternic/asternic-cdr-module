@@ -29,6 +29,7 @@ jobs:
 
       # Runs a set of commands using the runners shell
       - name: compress to file
+        id: createtgz
         run: |
           VERSION=$(grep version ${{ github.workspace }}/module.xml  | head -n 1 | sed 's/[></]//g' | sed 's/version//g' | sed 's/ //g')
           echo $VERSION
@@ -37,7 +38,7 @@ jobs:
           cp -pr ${{ github.workspace }}/* /tmp/asternic_cdr
           cd /tmp
           tar zcvf asternic_cdr-${VERSION}.tgz asternic_cdr
-          ls -la /tmp/asternic_cdr-*
+          echo "::set-output name=TGZFILE::asternic_cdr-${VERSION}.tgz"
           
       - name: copy file via ssh 
         uses: asternic/scp-action@master
@@ -46,5 +47,5 @@ jobs:
           username: ${{ secrets.REPOUSER }}
           port: ${{ secrets.REPOPORT }}
           password: ${{ secrets.REPOPASSWORD }}
-          source: /tmp/asternic_cdr*
+          source: ${{ steps.createtgz.outputs.TGZFILE }}
           target: "/tmp"
