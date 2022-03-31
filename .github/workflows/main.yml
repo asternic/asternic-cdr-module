@@ -1,0 +1,46 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # Runs a single command using the runners shell
+      - name: Run a one-line script
+        run: echo Hello, world!
+
+      # Runs a set of commands using the runners shell
+      - name: compress to file
+        run: |
+          VERSION=$(grep version /tmp/asternic_cdr/module.xml  | head -n 1 | sed 's/[></]//g' | sed 's/version//g' | sed 's/ //g')
+          rm -rf /tmp/asternic_cdr >/dev/null
+          mkdir /tmp/asternic_cdr
+          cp -pr ${{ github.workspace }} /tmp/asternic_dr
+          ls -la /tmp/asternic_cdr
+          cd /tmp
+          tar zcvf asternic_cdr-${VERSION}.tgz asternic_cdr
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          
+      - name: Upload Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+       name: asternic_cdr-${VERSION}.tgz
+       path: "/tmp/asternic_cdr-${VERSION}.tgz"   
