@@ -35,15 +35,12 @@ jobs:
           rm -rf /tmp/asternic_cdr >/dev/null
           mkdir /tmp/asternic_cdr
           cp -pr ${{ github.workspace }}/* /tmp/asternic_cdr
-          ls -la /tmp/asternic_cdr
           cd /tmp
           tar zcvf asternic_cdr-${VERSION}.tgz asternic_cdr
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "ARTIFACT_FILE=/tmp/asternic_cdr-${VERSION}.tgz" >> $GITHUB_ENV
-          echo "ARTIFACT_NAME=asternic_cdr-${VERSION}.tgz" >> $GITHUB_ENV
+          ls -la /tmp/asternic_cdr-*
           
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
         with:
-         name: ${ARTIFACT_NAME}
-         path: ${ARTIFACT_FILE}
+         name: asternic_cdr_module
+         path: /tmp/asternic*.tgz
