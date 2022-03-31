@@ -1,10 +1,10 @@
 # README #
 
-This is the Asternic CDR IssabelPBX Module
+This is the Asternic CDR IssabelPBX and FPBX Module
 
 ### What is this repository for? ###
 
-* Provides an alternative way to present CDR reports for Issabel
+* Provides an alternative way to present CDR reports for Issabel and FPBX
 
 ### How do I get set up? ###
 
