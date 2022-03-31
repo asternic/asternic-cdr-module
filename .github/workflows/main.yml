@@ -39,9 +39,11 @@ jobs:
           cd /tmp
           tar zcvf asternic_cdr-${VERSION}.tgz asternic_cdr
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "ARTIFACT_FILE=/tmp/asternic_cdr-${VERSION}.tgz" >> $GITHUB_ENV
+          echo "ARTIFACT_NAME=asternic_cdr-${VERSION}.tgz" >> $GITHUB_ENV
           
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
         with:
-         name: asternic_cdr-${VERSION}.tgz
-         path: "/tmp/asternic_cdr-${VERSION}.tgz"   
+         name: ${ARTIFACT_NAME}
+         path: ${ARTIFACT_FILE}
