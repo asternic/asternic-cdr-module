@@ -513,7 +513,7 @@ function asternic_distribution() {
 </div>
 <hr/>
 <div id='asternicfooter'>
-<div style='float:right;'><a href='http://www.asternic.biz' border=0><img src='images/asternic_cdr_logo.jpg' alt='asternic cdr' border=0></a></div>
+<div style='float:right;'><a href='http://www.asternic.biz' border=0><img src='modules/asternic_cdr/images/asternic_cdr_logo.jpg' alt='asternic cdr' border=0></a></div>
 </div>
 </div> <!-- end div asternic content -->
 <div style='clear:both;'></div>
@@ -766,7 +766,7 @@ if($total_calls>0) {
         <a name='1'></a>
         <table width='99%' cellpadding=3 cellspacing=3 border=0 >
         <caption>
-        <img src='images/asternic_go-up.png' border=0 class='icon' width=16 height=16>
+        <img src='modules/asternic_cdr/images/asternic_go-up.png' border=0 class='icon' width=16 height=16>
         &nbsp;&nbsp;
         <?php echo _($rep_title) ?>
         </caption>
@@ -897,7 +897,7 @@ if($total_calls>0) {
                 echo "<tr $odd>\n";
 
                 echo "<td style='text-align: left;'><a onclick=\"javascript:getRecords('$chan','$start','$end','combined','$complete_self');\">";
-                echo "<img src='images/asternic_loading.gif' id='loading$chan' border=0 style=\"visibility: hidden; float: left;\">";
+                echo "<img src='modules/asternic_cdr/images/asternic_loading.gif' id='loading$chan' border=0 style=\"visibility: hidden; float: left;\">";
                 echo "{$canals[$chan]}</a></td>\n";
 
                 echo "<td>".$number_calls[$idx][$chan]."</td>\n";
@@ -923,6 +923,7 @@ if($total_calls>0) {
                                      $number_calls[$idx][$chan],
                                      $number_calls_inbound[$idx][$chan],
                                      $number_calls_outbound[$idx][$chan],
+                                     $nomissed,
                                      $missed[$idx][$chan],
                                      $percent_missed,
                                      "$bill_print ",
@@ -978,7 +979,7 @@ if($total_calls>0) {
 </div>
 <hr/>
 <div id='asternicfooter'>
-<div style='float:right;'><a href='http://www.asternic.biz' border=0><img src='images/asternic_cdr_logo.jpg' alt='asternic cdr' border=0></a></div>
+<div style='float:right;'><a href='http://www.asternic.biz' border=0><img src='modules/asternic_cdr/images/asternic_cdr_logo.jpg' alt='asternic cdr' border=0></a></div>
 </div>
 </div> <!-- end div asternic content -->
 <div style='clear:both;'></div>
@@ -1178,7 +1179,7 @@ if($total_calls>0) {
         <a name='1'></a>
         <table width='99%' cellpadding=3 cellspacing=3 border=0 >
         <caption>
-        <img src='images/asternic_go-up.png' border=0 class='icon' width=16 height=16>
+        <img src='modules/asternic_cdr/images/asternic_go-up.png' border=0 class='icon' width=16 height=16>
         &nbsp;&nbsp;
         <?php echo _($rep_title) ?>
         </caption>
@@ -1304,7 +1305,7 @@ if($total_calls>0) {
 
 
                 echo "<td style='text-align: left;'><a onclick=\"javascript:getRecords('$chan','$start','$end','$typerecord','$complete_self');\">";
-                echo "<img src='images/asternic_loading.gif' id='loading$chan' border=0 style=\"visibility: hidden; float: left;\">";
+                echo "<img src='modules/asternic_cdr/images/asternic_loading.gif' id='loading$chan' border=0 style=\"visibility: hidden; float: left;\">";
                 echo "{$canals[$chan]}</a></td>\n";
 
 
@@ -1387,7 +1388,7 @@ if($total_calls>0) {
 </div>
 <hr/>
 <div id='asternicfooter'>
-<div style='float:right;'><a href='http://www.asternic.biz' border=0><img src='images/asternic_cdr_logo.jpg' alt='asternic cdr' border=0></a></div>
+<div style='float:right;'><a href='http://www.asternic.biz' border=0><img src='modules/asternic_cdr/images/asternic_cdr_logo.jpg' alt='asternic cdr' border=0></a></div>
 </div>
 </div> <!-- end div asternic content -->
 <div style='clear:both;'></div>
@@ -1588,12 +1589,12 @@ foreach($canals as $canall=>$canalname) {
     </select>
 </td>
 <td align="left">
-        <a href='#' onclick="List_move_around('right',false); return false;"><img src='images/asternic_go-next.png' width=16 height=16 border=0></a>
-        <a href='#' onclick="List_move_around('left', false); return false;"><img src='images/asternic_go-previous.png' width=16 height=16 border=0></a>
+        <a href='#' onclick="List_move_around('right',false); return false;"><img src='modules/asternic_cdr/images/asternic_go-next.png' width=16 height=16 border=0></a>
+        <a href='#' onclick="List_move_around('left', false); return false;"><img src='modules/asternic_cdr/images/asternic_go-previous.png' width=16 height=16 border=0></a>
         <br>
         <br>
-        <a href='#' onclick="List_move_around('right', true); return false;"><img src='images/asternic_go-last.png' width=16 height=16 border=0></a>
-        <a href='#' onclick="List_move_around('left', true); return false;"><img src='images/asternic_go-first.png' width=16 height=16 border=0></a>
+        <a href='#' onclick="List_move_around('right', true); return false;"><img src='modules/asternic_cdr/images/asternic_go-last.png' width=16 height=16 border=0></a>
+        <a href='#' onclick="List_move_around('left', true); return false;"><img src='modules/asternic_cdr/images/asternic_go-first.png' width=16 height=16 border=0></a>
 </td>
 <td>
     <?php echo _('Selected')?><br/>
@@ -1730,7 +1731,7 @@ echo _('Last three months')."</a><br/>";
 </div> <!-- end div asternicmain red -->
 <hr/>
 <div id='asternicfooter'>
-<div style='float:right;'><a href='http://www.asternic.biz' border=0><img src='images/asternic_cdr_logo.jpg' alt='asternic cdr' border=0></a></div>
+<div style='float:right;'><a href='http://www.asternic.biz' border=0><img src='modules/asternic_cdr/images/asternic_cdr_logo.jpg' alt='asternic cdr' border=0></a></div>
 </div> <!-- end div asternicfooter -->
 </div> <!-- end div asternic content -->
 <div style='clear:both;'></div>
