@@ -38,6 +38,7 @@ jobs:
       - name: copy file via ssh 
         uses: asternic/scp-action@master
         with:
+          debug: true
           host: ${{ secrets.REPOHOST }}
           username: ${{ secrets.REPOUSER }}
           port: ${{ secrets.REPOPORT }}
