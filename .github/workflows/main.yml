@@ -39,6 +39,7 @@ jobs:
         run: |
           echo ${{ steps.createtgz.outputs.TGZFILE }}
           echo ${{ steps.createtgz.outputs.TGZFILE }}
+          ls -lda /tmp
       - name: copy file via ssh 
         uses: asternic/scp-action@master
         with:
@@ -48,7 +49,7 @@ jobs:
           port: ${{ secrets.REPOPORT }}
           password: ${{ secrets.REPOPASSWORD }}
           source: ${{ github.workspace }}/module.xml
-          target: "tmp"
+          target: "/tmp"
 
           
           
