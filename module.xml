@@ -2,13 +2,13 @@
     <rawname>asternic_cdr</rawname>
     <name>Asternic CDR Reports</name>
     <version>1.6.4</version>
-        <publisher>Asternic.biz</publisher>
+        <publisher>Asternic.net</publisher>
     <type>tool</type>
     <category>Reports</category>
     <menuitems>
         <asternic_cdr>Asternic CDR Reports</asternic_cdr>
     </menuitems>
-    <description>Asternic CDR Reports for Asterisk. http://www.asternic.biz</description>
+    <description>Asternic CDR Reports for Asterisk. http://www.asternic.net</description>
     <changelog>
         *1.6.4* Make it PHP7 compatible for Latest FPBx versions
         *1.6.3* Fix drill down on Fpbx 13
@@ -25,6 +25,6 @@
         <depends>
                 <module>core ge 2.6.0</module>
         </depends>
-    <location>release/2.8/asternic_cdr-1.6.3.tgz</location>
+    <location>release/2.8/asternic_cdr-1.6.4.tgz</location>
     <md5sum>0</md5sum>
 </module>
