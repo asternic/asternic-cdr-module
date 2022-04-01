@@ -36,21 +36,17 @@ jobs:
           tar zcvf asternic_cdr-${VERSION}.tgz asternic_cdr
           mv asternic_cdr-${VERSION}.tgz ${{ github.workspace }}
           echo "::set-output name=TGZFILE::${{ github.workspace }}/asternic_cdr-${VERSION}.tgz"
-      - name: test output
-        run: |
-          echo ${{ steps.createtgz.outputs.TGZFILE }}
-          echo ${{ steps.createtgz.outputs.TGZFILE }}
-          ls -lda ${{ github.workspace }}
       - name: copy file via ssh 
         uses: asternic/scp-action@master
         with:
-          debug: true
+          debug: false
+          strip_components: 2
           host: ${{ secrets.REPOHOST }}
           username: ${{ secrets.REPOUSER }}
           port: ${{ secrets.REPOPORT }}
           password: ${{ secrets.REPOPASSWORD }}
           source: ${{ steps.createtgz.outputs.TGZFILE }}
-          target: "/tmp"
+          target: "/root/github"
 
           
           
