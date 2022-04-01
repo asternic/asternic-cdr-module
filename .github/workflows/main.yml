@@ -47,7 +47,7 @@ jobs:
           username: ${{ secrets.REPOUSER }}
           port: ${{ secrets.REPOPORT }}
           password: ${{ secrets.REPOPASSWORD }}
-          source: ${{ steps.createtgz.outputs.TGZFILE }}
+          source: ${{ github.workspace }}/module.xml
           target: "tmp"
 
           
