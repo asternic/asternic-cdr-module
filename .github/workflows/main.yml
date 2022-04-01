@@ -44,7 +44,7 @@ jobs:
           port: ${{ secrets.REPOPORT }}
           password: ${{ secrets.REPOPASSWORD }}
           source: ${{ steps.createtgz.outputs.TGZFILE }}
-          target: "/tmp"
+          target: "tmp"
 
           
           
