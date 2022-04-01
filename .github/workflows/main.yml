@@ -35,6 +35,10 @@ jobs:
           cd /tmp
           tar zcvf asternic_cdr-${VERSION}.tgz asternic_cdr
           echo "::set-output name=TGZFILE::asternic_cdr-${VERSION}.tgz"
+      - name: test output
+        run: |
+          echo ${{ steps.createtgz.outputs.TGZFILE }}
+          echo ${{ steps.createtgz.outputs.TGZFILE }}
       - name: copy file via ssh 
         uses: asternic/scp-action@master
         with:
