@@ -34,12 +34,13 @@ jobs:
           cp -pr ${{ github.workspace }}/* /tmp/asternic_cdr
           cd /tmp
           tar zcvf asternic_cdr-${VERSION}.tgz asternic_cdr
-          echo "::set-output name=TGZFILE::/tmp/asternic_cdr-${VERSION}.tgz"
+          mv asternic_cdr-${VERSION.tgz ${{ github.workspace }}
+          echo "::set-output name=TGZFILE::${{ github.workspace }}/asternic_cdr-${VERSION}.tgz"
       - name: test output
         run: |
           echo ${{ steps.createtgz.outputs.TGZFILE }}
           echo ${{ steps.createtgz.outputs.TGZFILE }}
-          ls -lda /tmp
+          ls -lda ${{ github.workspace }}
       - name: copy file via ssh 
         uses: asternic/scp-action@master
         with:
@@ -48,7 +49,7 @@ jobs:
           username: ${{ secrets.REPOUSER }}
           port: ${{ secrets.REPOPORT }}
           password: ${{ secrets.REPOPASSWORD }}
-          source: ${{ github.workspace }}/module.xml
+          source: ${{ steps.createtgz.outputs.TGZFILE }}
           target: "/tmp"
 
           
