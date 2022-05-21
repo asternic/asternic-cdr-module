@@ -5,6 +5,7 @@
         <publisher>Asternic.net</publisher>
     <type>tool</type>
     <category>Reports</category>
+    <embedcategory>Advanced</embedcategory>
     <menuitems>
         <asternic_cdr>Asternic CDR Reports</asternic_cdr>
     </menuitems>
