@@ -1,7 +1,7 @@
 <module>
     <rawname>asternic_cdr</rawname>
     <name>Asternic CDR Reports</name>
-    <version>1.6.4</version>
+    <version>1.6.5</version>
         <publisher>Asternic.net</publisher>
     <type>tool</type>
     <category>Reports</category>
@@ -11,6 +11,7 @@
     </menuitems>
     <description>Asternic CDR Reports for Asterisk. http://www.asternic.net</description>
     <changelog>
+        *1.6.5* Use Chart.js for charts instead of deprecated Flash. Make it work in embedded Issabel
         *1.6.4* Make it PHP7 compatible for Latest FPBx versions
         *1.6.3* Fix drill down on Fpbx 13
         *1.6.2* Fix fpdf so it works with PHP > 5.3
