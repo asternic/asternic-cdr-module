@@ -17,7 +17,96 @@ function return_timestamp($date_string) {
     return $u_timestamp;
 }
 
+
+
 function swf_bar($values,$width,$height,$divid,$stack) {
+
+?>
+
+<canvas id="<?php echo $divid?>" width='<?php echo $width;?>' height='<?php echo $height;?>'></canvas>
+
+
+<script>
+
+<?php
+parse_str($values,$options);
+
+$colores = array('#FF6600','#538353');
+$labels  = array();
+$dvalues = array();
+
+foreach($options as $key=>$val) {
+    if(substr($key,0,3)=="var") {
+        $labels[]=$val;
+    } else if(substr($key,0,3)=="tag") {
+        $series = substr($key,3,1);
+        $seriename[$series]=$val;
+    } else if(substr($key,0,3)=="val") {
+        if($stack==0) {
+            $dvalues['A'][]=$val;
+        } else {
+            $series = substr($key,3,1);
+            $dvalues[$series][]=$val;
+        }
+    }
+}
+if(!isset($seriename['A'])) {
+    if(preg_match("/secs/",$options['title'])) {
+        $seriename['A']="Seconds";
+    } else {
+        $seriename['A']="Count";
+    }
+}
+
+$labelstext = "'".implode("','",$labels)."'";
+
+?>
+
+var barChartData_<?php echo $divid;?> = {
+    labels: [<?php echo $labelstext;?>],
+    datasets: [
+
+<?php
+foreach($dvalues as $serie=>$points) {
+    $valuestext = implode(",",$points);
+    $color = array_shift($colores);
+?>
+{
+backgroundColor: '<?php echo $color;?>',
+label: '<?php echo $seriename[$serie];?>',
+data: [
+<?php echo $valuestext;?>
+]
+},
+<?php } ?>
+
+    ]
+};
+
+$('document').ready(function(){
+var ctx = document.getElementById('<?php echo $divid;?>').getContext('2d');
+var myChart = new Chart(ctx, {
+type: 'bar',
+    data: barChartData_<?php echo $divid;?>,
+    options: {
+        title: {
+            display: true,
+            text: '<?php echo $options['title'];?>'
+        },
+        tooltips: {
+            mode: 'index',
+            intersect: false
+        },
+        responsive: true
+    }
+});
+});
+</script>
+
+<?php
+}
+
+function swf_bar_old($values,$width,$height,$divid,$stack) {
     global $config;
 
     if ($stack==1) {
