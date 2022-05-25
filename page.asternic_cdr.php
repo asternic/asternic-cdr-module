@@ -19,63 +19,60 @@
     <http://www.gnu.org/licenses/>.
 */
 
-$departments = Array();
-$condicionextra = "";
+$appconfig = array();
+$appconfig['departments'] = Array();
+$appconfig['condicionextra'] = "";
+
+$basedir = dirname($_SERVER["SCRIPT_FILENAME"]);
+if(preg_match("/\/admin/",$basedir)) {
+    $appconfig['relative_path'] = "images/";
+} else {
+    $appconfig['relative_path'] = "admin/images/";
+}
 
 if(isset($_POST['List_Extensions'])) {
-    $extension="";
+    $appconfig['extension']="";
     if(is_array($_POST['List_Extensions'])) {
         foreach($_POST['List_Extensions'] as $valor) {
-            $extension.=stripslashes($valor).",";
+            $appconfig['extension'].=stripslashes($valor).",";
         }
-        $extension=substr($extension,0,-1);
-        $_SESSION['CDRSTATS']['extension']=$extension;
+        $appconfig['extension']=substr($appconfig['extension'],0,-1);
+        $_SESSION['CDRSTATS']['extension']=$appconfig['extension'];
     }
 } else {
-    $extension="''";
+    $appconfig['extension']="''";
 }
 
 if(isset($_POST['start'])) {
-   $start = $_POST['start'];
-   $_SESSION['CDRSTATS']['start']=$start;
+   $appconfig['start'] = $_POST['start'];
+   $_SESSION['CDRSTATS']['start']=$appconfig['start'];
 } else {
-   $start = date('Y-m-d 00:00:00');
+   $appconfig['start'] = date('Y-m-d 00:00:00');
 }
 
 if(isset($_POST['end'])) {
-   $end = $_POST['end'];
-   $_SESSION['CDRSTATS']['end']=$end;
+   $appconfig['end'] = $_POST['end'];
+   $_SESSION['CDRSTATS']['end']=$appconfig['end'];
 } else {
-   $end = date('Y-m-d 23:59:59');
+   $appconfig['end'] = date('Y-m-d 23:59:59');
 }
 
 if(isset($_SESSION['CDRSTATS']['start'])) {
-   $start = $_SESSION['CDRSTATS']['start'];
+   $appconfig['start'] = $_SESSION['CDRSTATS']['start'];
 }
 
 if(isset($_SESSION['CDRSTATS']['end'])) {
-   $end = $_SESSION['CDRSTATS']['end'];
+   $appconfig['end'] = $_SESSION['CDRSTATS']['end'];
 }
 
 if(isset($_SESSION['CDRSTATS']['extension'])) {
-   $extension = $_SESSION['CDRSTATS']['extension'];
+   $appconfig['extension'] = $_SESSION['CDRSTATS']['extension'];
 }
 
-$fstart_year  = substr($start,0,4);
-$fstart_month = substr($start,5,2);
-$fstart_day = substr($start,8,2);
-
-
-$fend_year  = substr($end,0,4);
-$fend_month = substr($end,5,2);
-$fend_day = substr($end,8,2);
-
-$timestamp_start = return_timestamp($start);
-$timestamp_end   = return_timestamp($end);
-
+$timestamp_start = return_timestamp($appconfig['start']);
+$timestamp_end   = return_timestamp($appconfig['end']);
 $elapsed_seconds = $timestamp_end - $timestamp_start;
-$period          = floor(($elapsed_seconds / 60) / 60 / 24) + 1;
-
+$appconfig['period'] = floor(($elapsed_seconds / 60) / 60 / 24) + 1;
 
 $sql = "SELECT extension,if(dial is null,concat('USER/',extension),dial) AS dial,";
 $sql.= "name FROM users ";
@@ -84,92 +81,33 @@ $results = $db->getAll($sql, DB_FETCHMODE_ASSOC);
 if(DB::IsError($results)) {
     die($results->getMessage());
 }
-$canals=Array();
+$appconfig['canals']=array();
 
 foreach ($results as $result) {
-//    $asternicdevice[$result['extension']]=$result['dial'];
-//    $asternicname[$result['extension']]=$result['name'];
-
     //ADDED BY JFL TO BE MORE CONSISTENT WITH ADMINISTRATOR ROLE RESTRICTION PER EXTENSION RANGE IN FPBX 
     // (with a little modification by asternic)
     if (isset($result['extension']) && checkRange($result['extension'])) { 
-        $canals[$result['dial']]=$result['name'];
+        $appconfig['canals'][$result['dial']]=$result['name'];
     }
 }
 
-$yearp[0]=_('January');
-$yearp[1]=_('February');
-$yearp[2]=_('March');
-$yearp[3]=_('April');
-$yearp[4]=_('May');
-$yearp[5]=_('June');
-$yearp[6]=_('July');
-$yearp[7]=_('August');
-$yearp[8]=_('September');
-$yearp[9]=_('October');
-$yearp[10]=_('November');
-$yearp[11]=_('December');
+$appconfig['dayp']=array();
+$appconfig['dayp'][0]=_('Sunday');
+$appconfig['dayp'][1]=_('Monday');
+$appconfig['dayp'][2]=_('Tuesday');
+$appconfig['dayp'][3]=_('Wednesday');
+$appconfig['dayp'][4]=_('Thursday');
+$appconfig['dayp'][5]=_('Friday');
+$appconfig['dayp'][6]=_('Saturday');
 
-$dayp[0]=_('Sunday');
-$dayp[1]=_('Monday');
-$dayp[2]=_('Tuesday');
-$dayp[3]=_('Wednesday');
-$dayp[4]=_('Thursday');
-$dayp[5]=_('Friday');
-$dayp[6]=_('Saturday');
-
-
-$start_today = date('Y-m-d 00:00:00');
-$end_today = date('Y-m-d 23:59:59');
-
-$start_today_ts = return_timestamp($start_today);
-
-$day = date('w',$start_today_ts);
-$diff_to_monday = $start_today_ts - (($day - 1) * 86400);
-
-// Start and End date for last week (it counts from the first monday back
-// till the next sunday
-$begin_week_monday = date('Y-m-d 00:00:00',$diff_to_monday);
-$end_week_sunday   = date('Y-m-d 23:59:59',($diff_to_monday + (6 * 86400)));
-
-$end_year = date('Y');
-
-$begin_month = date('Y-m-01 00:00:00');
-$begin_month_ts = return_timestamp($begin_month);
-$end_month_ts = $begin_month_ts + (86400 * 32);
-
-
-$end_past_month_ts = $begin_month_ts - 1;
-$end_past_month =  date('Y-m-d 23:59:59',$end_past_month_ts);
-$begin_past_month = date('Y-m-01 00:00:00',$end_past_month_ts);
-
-$begin_past_month_ts = return_timestamp($begin_past_month);
-$end_past2_month_ts = $begin_past_month_ts - 1;
-$end_past2_month =  date('Y-m-d 23:59:59',$end_past2_month_ts);
-$begin_past2_month = date('Y-m-01 00:00:00',$end_past2_month_ts);
-
-for ($a=4; $a>0; $a--) {
-   $day_number = date('d',$end_month_ts);
-   if($day_number == 1) {
-      $a==0;
-   } else {
-      $end_month_ts -= 86400;
-   }
-}
-$end_month_ts -= 86400;
-
-$end_month = date('Y-m-d',$end_month_ts);
-
-$items_extension = explode(",",$extension);
-$items_extension = array_map("remove_quotes",$items_extension);
-
+$appconfig['db']=$db;
 
 if(isset($_REQUEST['action'])) {
     if($_REQUEST['action']=="download") {
         asternic_download($_REQUEST['file']);
         die();
     } else if($_REQUEST['action']=="getrecords") {
-        asternic_getrecords($_REQUEST);
+        asternic_getrecords($_REQUEST,$appconfig);
         die();
     } else if($_REQUEST['action']=="export") {
         asternic_export($_REQUEST);
@@ -184,36 +122,37 @@ if(!isset($_POST['start'])) {
 
     if(isset($_GET['tab'])) {
         if($_GET['tab']=="outgoing") {
-            asternic_report('outgoing');
+            asternic_report('outgoing',$appconfig);
         } else if($_GET['tab']=="incoming") { 
-            asternic_report('incoming');
+            asternic_report('incoming',$appconfig);
         } else if($_GET['tab']=="combined") { 
-            inbound_outbound('combined');
+            inbound_outbound('combined',$appconfig);
         } else if($_GET['tab']=="home") { 
-            asternic_home();
+            asternic_home($appconfig);
         } else if($_GET['tab']=="distribution") { 
-            asternic_distribution();
+            asternic_distribution($appconfig);
         }
     } else {
         // Desde el menu de FreePBX
-        asternic_home();
+        asternic_home($appconfig);
     }
 
 } else {
     $_GET['tab']="outgoing";
-    asternic_report('outgoing');
+    asternic_report('outgoing',$appconfig);
 }
 
-function asternic_distribution() {
+function asternic_distribution($appconfig) {
 
-    global $db, $extension,$start,$end,$period,$canals,$dayp;
+    $db   = $appconfig['db'];
+    $dayp = $appconfig['dayp'];
 
-    $start_parts = preg_split("/ /", $start);
-    $end_parts   = preg_split("/ /", $end);
+    $start_parts = preg_split("/ /", $appconfig['start']);
+    $end_parts   = preg_split("/ /", $appconfig['end']);
 
-    $start_ts = return_timestamp($start);
+    $start_ts = return_timestamp($appconfig['start']);
 
-    for($a=1;$a<=$period;$a++) {
+    for($a=1;$a<=$appconfig['period'];$a++) {
         $new_ts = $start_ts + ($a * 86400) - 86400;
         $fechanueva = date('Ymd',$new_ts);
         $dianum = date('w',$new_ts);
@@ -221,7 +160,7 @@ function asternic_distribution() {
         $array_fechas[]=$fechanueva;
     }
 
-    $items_canal = explode(",",$extension);
+    $items_canal = explode(",",$appconfig['extension']);
     $items_canal = array_map("remove_quotes",$items_canal);
 
     foreach ($items_canal as $canalete) {
@@ -247,12 +186,11 @@ function asternic_distribution() {
 
     // for outgoing calls
     $query = "SELECT substring(channel,1,locate(\"-\",channel,1)-1) AS chan1, ";
-    //$query = "SELECT IF(channel like 'Local/%',CONCAT('SIP',RIGHT(substring(replace(channel,'-','/'),1,instr(channel,'@')-1),instr(reverse(substring(replace(channel,'-','/'),1,instr(channel,'@')-1)),'/'))),substring(channel,1,locate(\"-\",channel,1)-1)) as chan1, ";
     $query.= "billsec, calldate,";
     $query.= "(time_to_sec(calldate)-(hour(calldate)*3600)+billsec)-3600 AS minute, hour(calldate) AS hour,date_format(calldate,'%Y%m%d') AS fulldate ";
     $query.= "FROM asteriskcdrdb.cdr WHERE  substring(channel,1,locate(\"-\",channel,1)-1)<>'' ";
-    $query.= "AND calldate >= '$start' AND calldate <= '$end' AND (duration-billsec) >=0 ";
-    $query.= "HAVING chan1 IN ($extension) ORDER BY calldate";
+    $query.= "AND calldate >= '${appconfig['start']}' AND calldate <= '${appconfig['end']}' AND (duration-billsec) >=0 ";
+    $query.= "HAVING chan1 IN (${appconfig['extension']}) ORDER BY calldate";
 
     $res = $db->query($query);
 
@@ -260,7 +198,6 @@ function asternic_distribution() {
         die($res->getMessage());
     }
 
-    //while ($res->fetchInto($row, DB_FETCHMODE_ASSOC)) {
     while (is_array($row = $res->fetchRow(DB_FETCHMODE_ASSOC))) {
 
         if($row['fulldate']<>$previous_date) {
@@ -300,12 +237,11 @@ function asternic_distribution() {
  
     // for incoming calls
     $query = "SELECT substring(dstchannel,1,locate(\"-\",dstchannel,1)-1) AS chan1, billsec, calldate,";
-    //$query = "SELECT IF(dstchannel like 'Local/%',CONCAT('SIP',RIGHT(substring(replace(dstchannel,'-','/'),1,instr(dstchannel,'@')-1),instr(reverse(substring(replace(dstchannel,'-','/'),1,instr(dstchannel,'@')-1)),'/'))),substring(dstchannel,1,locate(\"-\",dstchannel,1)-1)) as chan1, ";
     $query.= "billsec, calldate,";
     $query.= "(time_to_sec(calldate)-(hour(calldate)*3600)+billsec)-3600 AS minute, hour(calldate) AS hour,date_format(calldate,'%Y%m%d') AS fulldate ";
     $query.= "FROM asteriskcdrdb.cdr WHERE  substring(dstchannel,1,locate(\"-\",dstchannel,1)-1)<>'' ";
-    $query.= "AND calldate >= '$start' AND calldate <= '$end' AND (duration-billsec) >=0 ";
-    $query.= "HAVING chan1 IN ($extension) ORDER BY calldate";
+    $query.= "AND calldate >= '${appconfig['start']}' AND calldate <= '${appconfig['end']}' AND (duration-billsec) >=0 ";
+    $query.= "HAVING chan1 IN (${appconfig['extension']}) ORDER BY calldate";
 
     //echo $query;
 
@@ -359,8 +295,8 @@ function asternic_distribution() {
 
     $query = "SELECT hour(calldate) AS hour, count(*) AS count, SUM(billsec) AS seconds FROM asteriskcdrdb.cdr ";
     $query.= "WHERE  substring(dstchannel,1,locate(\"-\",dstchannel,1)-1)<>'' ";
-    $query.= "AND calldate >= '$start' AND calldate <= '$end' AND (duration-billsec) >=0 ";
-    $query.= "AND ( substring(dstchannel,1,locate(\"-\",dstchannel,1)-1) IN ($extension) OR substring(channel,1,locate(\"-\",channel,1)-1) IN ($extension)) ";
+    $query.= "AND calldate >= '${appconfig['start']}' AND calldate <= '${appconfig['end']}' AND (duration-billsec) >=0 ";
+    $query.= "AND ( substring(dstchannel,1,locate(\"-\",dstchannel,1)-1) IN (${appconfig['extension']}) OR substring(channel,1,locate(\"-\",channel,1)-1) IN (${appconfig['extension']})) ";
     $query.= "GROUP BY 1 ORDER BY calldate";
 
     $res = $db->query($query);
@@ -404,7 +340,7 @@ function asternic_distribution() {
             </tr>
             <tr>
                    <td><?php echo _('Period')?>:</td>
-                   <td><?php echo $period?> <?php echo _('days')?></td>
+                   <td><?php echo $appconfig['period']?> <?php echo _('days')?></td>
             </tr>
             </tbody>
             </table>
@@ -450,9 +386,9 @@ function asternic_distribution() {
     echo "</table><BR>\n";
 
     // Distribution Diagrams
-    if($period>1) {
+    if($appconfig['period']>1) {
         foreach ($dur as $chann=>$vel) {
-            echo "<h2>".$canals[$chann]."</h2>";
+            echo "<h2>".$appconfig['canals'][$chann]."</h2>";
             echo "<table>\n<thead>"; 
             echo "<tr><th></th><th colspan=25>"._('Hour of day (8 means 08h00 - 08h59)')."</th></tr>\n";
             echo "<tr><th>Date</th>";
@@ -489,7 +425,7 @@ function asternic_distribution() {
       echo "<th>"._('total')."</th></tr></thead><tbody>\n";
       foreach ($dur as $chann=>$vel) {
           foreach ($vel as $date=>$val) {
-            echo "<tr><td>".$canals[$chann]."</td>";
+            echo "<tr><td>".$appconfig['canals'][$chann]."</td>";
             $total_day = 0;
             for ($hour=0;$hour<24;$hour++) {
                 if(!isset($dur[$chann][$date][$hour])) { $dur[$chann][$date][$hour]=0; }
@@ -513,7 +449,7 @@ function asternic_distribution() {
 </div>
 <hr/>
 <div id='asternicfooter'>
-<div style='float:right;'><a href='http://www.asternic.biz' border=0><img src='modules/asternic_cdr/images/asternic_cdr_logo.jpg' alt='asternic cdr' border=0></a></div>
+<div style='float:right;'><a href='https://www.asternic.net' border=0><img src='<?php echo $appconfig['relative_path'];?>/asternic_cdr_logo.jpg' alt='asternic cdr' border=0></a></div>
 </div>
 </div> <!-- end div asternic content -->
 <div style='clear:both;'></div>
@@ -521,9 +457,10 @@ function asternic_distribution() {
 
 } // end function distribution
 
-function inbound_outbound() {
+function inbound_outbound($type,$appconfig) {
 
-    global $db, $extension,$start,$end,$period,$canals,$departments,$condicionextra;
+    $db = $appconfig['db'];
+
     $graphcolor      = "&bgcolor=0xfffdf3&bgcolorchart=0xdfedf3&fade1=ff6600&fade2=ff6314&colorbase=0xfff3b3&reverse=1";
     $graphcolorstack = "&bgcolor=0xfffdf3&bgcolorchart=0xdfedf3&fade1=ff6600&colorbase=fff3b3&reverse=1&fade2=0x528252";
 
@@ -534,8 +471,8 @@ function inbound_outbound() {
  
     $query = "SELECT substring($chanfield,1,locate(\"-\",$chanfield,length($chanfield)-8)-1) AS chan1,";
     $query.= "billsec,duration,duration-billsec as ringtime,src,dst,calldate,disposition,accountcode FROM asteriskcdrdb.cdr ";
-    $query.= "WHERE calldate >= '$start' AND calldate <= '$end' AND (duration-billsec) >=0 $condicionextra ";
-    $query.= "HAVING chan1 in ($extension) order by null";
+    $query.= "WHERE calldate >= '${appconfig['start']}' AND calldate <= '${appconfig['end']}' AND (duration-billsec) >=0 ${appconfig['condicionextra']} ";
+    $query.= "HAVING chan1 in (${appconfig['extension']}) order by null";
 
     $res = $db->query($query);
 
@@ -552,8 +489,8 @@ function inbound_outbound() {
 
         $row['accountcode']="Default";
 
-        if(!in_array($row['accountcode'],$departments)) {
-            array_push($departments,$row['accountcode']);
+        if(!in_array($row['accountcode'],$appconfig['departments'])) {
+            array_push($appconfig['departments'],$row['accountcode']);
             $group_bill_outbound[$row['accountcode']]  = 0;
             $group_ring_outbound[$row['accountcode']]  = 0;
             $group_calls_outbound[$row['accountcode']] = 0;
@@ -613,8 +550,8 @@ function inbound_outbound() {
  
     $query = "SELECT substring($chanfield,1,locate(\"-\",$chanfield,length($chanfield)-8)-1) AS chan1,";
     $query.= "billsec,duration,duration-billsec as ringtime,src,dst,calldate,disposition,accountcode FROM asteriskcdrdb.cdr ";
-    $query.= "WHERE calldate >= '$start' AND calldate <= '$end' AND (duration-billsec) >=0 $condicionextra ";
-    $query.= "HAVING chan1 in ($extension) order by null";
+    $query.= "WHERE calldate >= '${appconfig['start']}' AND calldate <= '${appconfig['end']}' AND (duration-billsec) >=0 ${appconfig['condicionextra']} ";
+    $query.= "HAVING chan1 in (${appconfig['extension']}) order by null";
 
     $res = $db->query($query);
 
@@ -627,8 +564,8 @@ function inbound_outbound() {
 
         $row['accountcode']="Default";
 
-        if(!in_array($row['accountcode'],$departments)) {
-            array_push($departments,$row['accountcode']);
+        if(!in_array($row['accountcode'],$appconfig['departments'])) {
+            array_push($appconfig['departments'],$row['accountcode']);
             $group_bill_inbound[$row['accountcode']]  = 0;
             $group_ring_inbound[$row['accountcode']]  = 0;
             $group_calls_inbound[$row['accountcode']] = 0;
@@ -703,8 +640,8 @@ function inbound_outbound() {
 
     $total_bill_print = seconds2minutes($total_bill);
 
-    $start_parts = preg_split("/ /", $start);
-    $end_parts   = preg_split("/ /", $end);
+    $start_parts = preg_split("/ /", $appconfig['start']);
+    $end_parts   = preg_split("/ /", $appconfig['end']);
 
     require_once("menu.php");
 ?>
@@ -730,7 +667,7 @@ function inbound_outbound() {
             </tr>
             <tr>
                    <td><?php echo _('Period')?>:</td>
-                   <td><?php echo $period?> <?php echo _('days')?></td>
+                   <td><?php echo $appconfig['period']?> <?php echo _('days')?></td>
             </tr>
             </tbody>
             </table>
@@ -766,7 +703,7 @@ if($total_calls>0) {
         <a name='1'></a>
         <table width='99%' cellpadding=3 cellspacing=3 border=0 >
         <caption>
-        <img src='modules/asternic_cdr/images/asternic_go-up.png' border=0 class='icon' width=16 height=16>
+        <img src='<?php echo $appconfig['relative_path'];?>asternic_go-up.png' border=0 class='icon' width=16 height=16>
         &nbsp;&nbsp;
         <?php echo _($rep_title) ?>
         </caption>
@@ -791,7 +728,7 @@ if($total_calls>0) {
 
     foreach($billsec as $idx=>$key) {
         echo "<tbody>\n";
-            if(count($departments)>1) {
+            if(count($appconfig['departments'])>1) {
 
                 $group_bill_print = seconds2minutes($group_bill[$idx]);
       
@@ -857,7 +794,7 @@ if($total_calls>0) {
                 $cual = $contador % 2;
                 if($cual>0) { $odd = " class='odd' "; } else { $odd = ""; }
 
-                $nomuser=$canals[$chan];
+                $nomuser=$appconfig['canals'][$chan];
 
                 $nomissed = $number_calls[$idx][$chan] - $missed[$idx][$chan];
 
@@ -896,9 +833,9 @@ if($total_calls>0) {
                 $complete_self = $_SERVER['REQUEST_URI'];
                 echo "<tr $odd>\n";
 
-                echo "<td style='text-align: left;'><a onclick=\"javascript:getRecords('$chan','$start','$end','combined','$complete_self');\">";
-                echo "<img src='modules/asternic_cdr/images/asternic_loading.gif' id='loading$chan' border=0 style=\"visibility: hidden; float: left;\">";
-                echo "{$canals[$chan]}</a></td>\n";
+                echo "<td style='text-align: left;'><a onclick=\"javascript:getRecords('$chan','${appconfig['start']}','${appconfig['end']}','combined','$complete_self');\">";
+                echo "<img src='${appconfig['relative_path']}asternic_loading.gif' id='loading$chan' border=0 style=\"visibility: hidden; float: left;\">";
+                echo "{$appconfig['canals'][$chan]}</a></td>\n";
 
                 echo "<td>".$number_calls[$idx][$chan]."</td>\n";
                 echo "<td>".$number_calls_inbound[$idx][$chan]."</td>\n";
@@ -919,7 +856,7 @@ if($total_calls>0) {
                 echo "</td></tr>";
 
                 $linea_pdf = Array(
-                                     $canals[$chan],
+                                     $appconfig['canals'][$chan],
                                      $number_calls[$idx][$chan],
                                      $number_calls_inbound[$idx][$chan],
                                      $number_calls_outbound[$idx][$chan],
@@ -948,13 +885,13 @@ if($total_calls>0) {
     $cover_pdf = _('Report Information')."\n";
     $cover_pdf.= _('Start Date').": ".$start_parts[0]."\n";
     $cover_pdf.= _('End Date').": ".$end_parts[0]."\n";
-    $cover_pdf.= _('Period').": ".$period." "._('days')."\n\n";
+    $cover_pdf.= _('Period').": ".$appconfig['period']." "._('days')."\n\n";
     $cover_pdf.= $rep_title."\n";
     $cover_pdf.= _('Number of Calls').": ".$total_calls." "._('calls')."\n";
     $cover_pdf.= _('Total Time').": ".$total_bill_print." "._('mins')."\n";
     $cover_pdf.= _('Avg. ring time').": ".$avg_ring_full." "._('secs')."\n";
 
-    print_exports($header_pdf,$data_pdf,$width_pdf,$title_pdf,$cover_pdf);
+    print_exports($header_pdf,$data_pdf,$width_pdf,$title_pdf,$cover_pdf,$appconfig);
 
     echo "<table class='pepa' width='99%' cellpadding=3 cellspacing=3 border=0>\n";
     echo "<thead>\n";
@@ -979,19 +916,19 @@ if($total_calls>0) {
 </div>
 <hr/>
 <div id='asternicfooter'>
-<div style='float:right;'><a href='http://www.asternic.biz' border=0><img src='modules/asternic_cdr/images/asternic_cdr_logo.jpg' alt='asternic cdr' border=0></a></div>
+<div style='float:right;'><a href='https://www.asternic.net' border=0><img src='<?php echo $appconfig['relative_path'];?>asternic_cdr_logo.jpg' alt='asternic cdr' border=0></a></div>
 </div>
 </div> <!-- end div asternic content -->
 <div style='clear:both;'></div>
 <?php
 } // end function inbound/outbound
 
-function asternic_report($typereport) {
+function asternic_report($typereport,$appconfig) {
 
-    global $db, $extension,$start,$end,$period,$canals,$departments,$condicionextra;
+    $db = $appconfig['db'];
+
     $graphcolor  = "&bgcolor=0xfffdf3&bgcolorchart=0xdfedf3&fade1=ff6600&fade2=ff6314&colorbase=0xfff3b3&reverse=1";
     $graphcolorstack = "&bgcolor=0xfffdf3&bgcolorchart=0xdfedf3&fade1=ff6600&colorbase=fff3b3&reverse=1&fade2=0x528252";
-
 
     if($typereport=="outgoing") {
         $chanfield = "channel";
@@ -1014,12 +951,12 @@ function asternic_report($typereport) {
     $query = "SELECT substring($otherchanfield,1,locate(\"-\",$otherchanfield,length($otherchanfield)-8)-1) AS chan1,";
 
     $query.= "billsec,duration,duration-billsec as ringtime,accountcode FROM asteriskcdrdb.cdr ";
-    $query.= "WHERE calldate >= '$start' AND calldate <= '$end' AND (duration-billsec) >=0 $condicionextra ";
-    $query.= "HAVING chan1 in ($extension) order by null";
+    $query.= "WHERE calldate >= '${appconfig['start']}' AND calldate <= '${appconfig['end']}' AND (duration-billsec) >=0 ${appconfig['condicionextra']} ";
+    $query.= "HAVING chan1 in (${appconfig['extension']}) order by null";
 
 
     $number_in_calls = Array();
-    $departments     = Array();
+    $appconfig['departments']     = Array();
     $billsec         = Array();
     $total_ring      = 0;
     $total_calls     = 0;
@@ -1031,7 +968,6 @@ function asternic_report($typereport) {
     }
 
 
-    // while ($res->fetchInto($row, DB_FETCHMODE_ASSOC)) {
     while (is_array($row = $res->fetchRow(DB_FETCHMODE_ASSOC))) {
 
 //        if($row['accountcode']=="") {
@@ -1047,8 +983,8 @@ function asternic_report($typereport) {
 
     $query = "SELECT substring($chanfield,1,locate(\"-\",$chanfield,length($chanfield)-8)-1) AS chan1,";
     $query.= "billsec,duration,duration-billsec as ringtime,src,dst,calldate,disposition,accountcode FROM asteriskcdrdb.cdr ";
-    $query.= "WHERE calldate >= '$start' AND calldate <= '$end' AND (duration-billsec) >=0 $condicionextra ";
-    $query.= "HAVING chan1 in ($extension) order by null";
+    $query.= "WHERE calldate >= '${appconfig['start']}' AND calldate <= '${appconfig['end']}' AND (duration-billsec) >=0 ${appconfig['condicionextra']} ";
+    $query.= "HAVING chan1 in (${appconfig['extension']}) order by null";
 
     $res = $db->query($query);
 
@@ -1067,8 +1003,8 @@ function asternic_report($typereport) {
             $row['accountcode']="Default";
 //        }
 
-        if(!in_array($row['accountcode'],$departments)) {
-            array_push($departments,$row['accountcode']);
+        if(!in_array($row['accountcode'],$appconfig['departments'])) {
+            array_push($appconfig['departments'],$row['accountcode']);
             $group_bill[$row['accountcode']]  = 0;
             $group_ring[$row['accountcode']]  = 0;
             $group_calls[$row['accountcode']] = 0;
@@ -1116,8 +1052,8 @@ function asternic_report($typereport) {
 
     $total_bill_print = seconds2minutes($total_bill);
 
-    $start_parts = preg_split("/ /", $start);
-    $end_parts   = preg_split("/ /", $end);
+    $start_parts = preg_split("/ /", $appconfig['start']);
+    $end_parts   = preg_split("/ /", $appconfig['end']);
 
     require_once("menu.php");
 ?>
@@ -1143,7 +1079,7 @@ function asternic_report($typereport) {
             </tr>
             <tr>
                    <td><?php echo _('Period')?>:</td>
-                   <td><?php echo $period?> <?php echo _('days')?></td>
+                   <td><?php echo $appconfig['period']?> <?php echo _('days')?></td>
             </tr>
             </tbody>
             </table>
@@ -1179,7 +1115,7 @@ if($total_calls>0) {
         <a name='1'></a>
         <table width='99%' cellpadding=3 cellspacing=3 border=0 >
         <caption>
-        <img src='modules/asternic_cdr/images/asternic_go-up.png' border=0 class='icon' width=16 height=16>
+        <img src='<?php echo $appconfig['relative_path'];?>asternic_go-up.png' border=0 class='icon' width=16 height=16>
         &nbsp;&nbsp;
         <?php echo _($rep_title) ?>
         </caption>
@@ -1202,7 +1138,7 @@ if($total_calls>0) {
    
     foreach($billsec as $idx=>$key) {
         echo "<tbody>\n";
-            if(count($departments)>1) {
+            if(count($appconfig['departments'])>1) {
 
                 $group_bill_print = seconds2minutes($group_bill[$idx]);
       
@@ -1266,7 +1202,7 @@ if($total_calls>0) {
                 $cual = $contador % 2;
                 if($cual>0) { $odd = " class='odd' "; } else { $odd = ""; }
 
-                $nomuser=$canals[$chan];
+                $nomuser=$appconfig['canals'][$chan];
                 $nomissed = $number_calls[$idx][$chan] - $missed[$idx][$chan];
                 $yesmissed   = $missed[$idx][$chan];
                 $query1 .= "valA$contavar=$nomissed&valB$contavar=$yesmissed&var$contavar=$nomuser&";
@@ -1305,8 +1241,8 @@ if($total_calls>0) {
 
 
                 echo "<td style='text-align: left;'><a onclick=\"javascript:getRecords('$chan','$start','$end','$typerecord','$complete_self');\">";
-                echo "<img src='modules/asternic_cdr/images/asternic_loading.gif' id='loading$chan' border=0 style=\"visibility: hidden; float: left;\">";
-                echo "{$canals[$chan]}</a></td>\n";
+                echo "<img src='${appconfig['relative_path']}asternic_loading.gif' id='loading$chan' border=0 style=\"visibility: hidden; float: left;\">";
+                echo "{$appconfig['canals'][$chan]}</a></td>\n";
 
 
                 echo "<td>".$number_calls[$idx][$chan]."</td>\n";
@@ -1330,7 +1266,7 @@ if($total_calls>0) {
                 echo "</td></tr>";
 
                 $linea_pdf = Array(
-                                     $canals[$chan],
+                                     $appconfig['canals'][$chan],
                                      $number_calls[$idx][$chan],
                                      $missed[$idx][$chan],
                                      $percent_missed,
@@ -1356,13 +1292,13 @@ if($total_calls>0) {
     $cover_pdf = _('Report Information')."\n";
     $cover_pdf.= _('Start Date').": ".$start_parts[0]."\n";
     $cover_pdf.= _('End Date').": ".$end_parts[0]."\n";
-    $cover_pdf.= _('Period').": ".$period." "._('days')."\n\n";
+    $cover_pdf.= _('Period').": ".$appconfig['period']." "._('days')."\n\n";
     $cover_pdf.= $rep_title."\n";
     $cover_pdf.= _('Number of Calls').": ".$total_calls." "._('calls')."\n";
     $cover_pdf.= _('Total Time').": ".$total_bill_print." "._('mins')."\n";
     $cover_pdf.= _('Avg. ring time').": ".$avg_ring_full." "._('secs')."\n";
 
-    print_exports($header_pdf,$data_pdf,$width_pdf,$title_pdf,$cover_pdf);
+    print_exports($header_pdf,$data_pdf,$width_pdf,$title_pdf,$cover_pdf,$appconfig);
 
     echo "<table class='pepa' width='99%' cellpadding=3 cellspacing=3 border=0>\n";
     echo "<thead>\n";
@@ -1388,7 +1324,7 @@ if($total_calls>0) {
 </div>
 <hr/>
 <div id='asternicfooter'>
-<div style='float:right;'><a href='http://www.asternic.biz' border=0><img src='modules/asternic_cdr/images/asternic_cdr_logo.jpg' alt='asternic cdr' border=0></a></div>
+<div style='float:right;'><a href='https://www.asternic.net' border=0><img src='<?php echo $appconfig['relative_path'];?>asternic_cdr_logo.jpg' alt='asternic cdr' border=0></a></div>
 </div>
 </div> <!-- end div asternic content -->
 <div style='clear:both;'></div>
@@ -1417,27 +1353,73 @@ function asternic_dashboard() {
 
 }
 
-function asternic_home() {
+function asternic_home($appconfig) {
 
-    global $db,$canals,$yearp;
-    global $fstart_year;
-    global $fstart_month;
-    global $fstart_day;
-    global $fend_year;
-    global $fend_month;
-    global $fend_day;
-    global $end_year;
-    global $start_year;
+    $yearp[0]=_('January');
+    $yearp[1]=_('February');
+    $yearp[2]=_('March');
+    $yearp[3]=_('April');
+    $yearp[4]=_('May');
+    $yearp[5]=_('June');
+    $yearp[6]=_('July');
+    $yearp[7]=_('August');
+    $yearp[8]=_('September');
+    $yearp[9]=_('October');
+    $yearp[10]=_('November');
+    $yearp[11]=_('December');
 
-    global $timestamp_start;
-    global $timestamp_end;
-    global $extension;
-    global $items_extension;
+    $dayp = $appconfig['dayp'];
+    $fstart_year  = substr($appconfig['start'],0,4);
+    $fstart_month = substr($appconfig['start'],5,2);
+    $fstart_day = substr($appconfig['start'],8,2);
 
-    global $start_today, $end_today;
-    global $begin_week_monday, $end_week_sunday;
-    global $begin_month,$end_month;
-    global $begin_past2_month,$end_month;
+    $fend_year  = substr($appconfig['end'],0,4);
+    $fend_month = substr($appconfig['end'],5,2);
+    $fend_day = substr($appconfig['end'],8,2);
+
+    $start_today = date('Y-m-d 00:00:00');
+    $end_today = date('Y-m-d 23:59:59');
+    $start_today_ts = return_timestamp($start_today);
+
+    $day = date('w',$start_today_ts);
+    $diff_to_monday = $start_today_ts - (($day - 1) * 86400);
+
+    // Start and End date for last week (it counts from the first monday back
+    // till the next sunday
+    $begin_week_monday = date('Y-m-d 00:00:00',$diff_to_monday);
+    $end_week_sunday   = date('Y-m-d 23:59:59',($diff_to_monday + (6 * 86400)));
+
+    $end_year = date('Y');
+
+    $begin_month = date('Y-m-01 00:00:00');
+    $begin_month_ts = return_timestamp($begin_month);
+    $end_month_ts = $begin_month_ts + (86400 * 32);
+
+    $end_past_month_ts = $begin_month_ts - 1;
+    $end_past_month =  date('Y-m-d 23:59:59',$end_past_month_ts);
+    $begin_past_month = date('Y-m-01 00:00:00',$end_past_month_ts);
+
+    $begin_past_month_ts = return_timestamp($begin_past_month);
+    $end_past2_month_ts = $begin_past_month_ts - 1;
+    $end_past2_month =  date('Y-m-d 23:59:59',$end_past2_month_ts);
+    $begin_past2_month = date('Y-m-01 00:00:00',$end_past2_month_ts);
+
+    for ($a=4; $a>0; $a--) {
+       $day_number = date('d',$end_month_ts);
+       if($day_number == 1) {
+          $a==0;
+       } else {
+          $end_month_ts -= 86400;
+       }
+    }
+    $end_month_ts -= 86400;
+
+    $end_month = date('Y-m-d',$end_month_ts);
+
+    $items_extension = explode(",",$appconfig['extension']);
+    $items_extension = array_map("remove_quotes",$items_extension);
+
+    $db = $appconfig['db'];
 
     $sql= "SELECT src,dst,lastapp,substring(channel,1,locate(\"-\",channel,1)-1) AS chan1, ";
     $sql.="substring(dstchannel,1,locate(\"-\",dstchannel,1)-1) AS chan2, ";
@@ -1448,6 +1430,7 @@ function asternic_home() {
     $sql.="HAVING outbound<>'' OR inbound<>'' AND chan2<>'' ORDER BY calldate DESC";
 
     $res = $db->query($sql);
+
 
     if(DB::IsError($res)) {
         die($res->getMessage());
@@ -1462,7 +1445,6 @@ function asternic_home() {
     $avgtime   = 0;
     $callsfrom = Array();
 
-    //while ($res->fetchInto($row, DB_FETCHMODE_ASSOC)) {
     while (is_array($row = $res->fetchRow(DB_FETCHMODE_ASSOC))) {
         $totalcall++;
         if($row['inbound']<>'') {
@@ -1498,7 +1480,7 @@ function asternic_home() {
 ?>
 <div id="asternicmain">
 <div id="asterniccontents">
-<form method='POST'>
+<form method='POST' name='asternic_cdr_form'>
 <input type=hidden name=start>
 <input type=hidden name=end>
 
@@ -1580,8 +1562,8 @@ function asternic_home() {
     <?php echo _('Available'); ?><br/>
     <select size=10 name="List_Extensions_available" multiple="multiple" id="myform_List_Extensions_from" style="height: 100px;width: 125px;" onDblClick="List_move_around('right',false);" >
 <?php    
-foreach($canals as $canall=>$canalname) {
-    if($canall <> "NONE" && !in_array($canall,$items_extension) && $extension<>"''") {
+foreach($appconfig['canals'] as $canall=>$canalname) {
+    if($canall <> "NONE" && !in_array($canall,$items_extension) && $appconfig['extension']<>"''") {
        echo "<option value=\"'$canall'\">$canalname</option>\n";
     }
 }
@@ -1589,26 +1571,26 @@ foreach($canals as $canall=>$canalname) {
     </select>
 </td>
 <td align="left">
-        <a href='#' onclick="List_move_around('right',false); return false;"><img src='modules/asternic_cdr/images/asternic_go-next.png' width=16 height=16 border=0></a>
-        <a href='#' onclick="List_move_around('left', false); return false;"><img src='modules/asternic_cdr/images/asternic_go-previous.png' width=16 height=16 border=0></a>
+        <a href='#' onclick="List_move_around('right',false); return false;"><img src='<?php echo $appconfig['relative_path'];?>asternic_go-next.png' width=16 height=16 border=0></a>
+        <a href='#' onclick="List_move_around('left', false); return false;"><img src='<?php echo $appconfig['relative_path'];?>asternic_go-previous.png' width=16 height=16 border=0></a>
         <br>
         <br>
-        <a href='#' onclick="List_move_around('right', true); return false;"><img src='modules/asternic_cdr/images/asternic_go-last.png' width=16 height=16 border=0></a>
-        <a href='#' onclick="List_move_around('left', true); return false;"><img src='modules/asternic_cdr/images/asternic_go-first.png' width=16 height=16 border=0></a>
+        <a href='#' onclick="List_move_around('right', true); return false;"><img src='<?php echo $appconfig['relative_path'];?>asternic_go-last.png' width=16 height=16 border=0></a>
+        <a href='#' onclick="List_move_around('left', true); return false;"><img src='<?php echo $appconfig['relative_path'];?>asternic_go-first.png' width=16 height=16 border=0></a>
 </td>
 <td>
     <?php echo _('Selected')?><br/>
     <select size=10 name="List_Extensions[]" multiple="multiple" style="height: 100px;width: 125px;" id="myform_List_Extensions_to" onDblClick="List_move_around('left',false);" >
         <?php
-        if($extension == "''") {
-            foreach($canals as $canall=>$canalname) {
+        if($appconfig['extension'] == "''") {
+            foreach($appconfig['canals'] as $canall=>$canalname) {
                 if($canall <> "NONE") {
                        echo "<option value=\"'$canall'\">$canalname</option>\n";
                 }
             }
         } else {
             foreach($items_extension as $canall) {
-                echo "<option value=\"'$canall'\">".$canals[$canall]."</option>\n";
+                echo "<option value=\"'$canall'\">".$appconfig['canals'][$canall]."</option>\n";
             }
         }
         ?>
@@ -1706,7 +1688,7 @@ echo _('Last three months')."</a><br/>";
         $start_year = $end_year - 5;
         $super_start_year = $start_year - 50;
         $super_end_year   = $end_year + 5;
-        echo "<select name='year2' size='1' onchange=\"checkMore( this, $start_year, $end_year, $super_start_year, $super_end_year );dateChange('day2','month2','year2');\">\n";
+        echo "<select name='year2' size='1' onchange=\"checkMore( this, ${start_year}, ${end_year}, $super_start_year, $super_end_year );dateChange('day2','month2','year2');\">\n";
         echo "<option value=\"MWJ_DOWN\">"._('lower')."</option>\n";
         for($a=$start_year;$a<=$end_year;$a++)
         {
@@ -1731,7 +1713,7 @@ echo _('Last three months')."</a><br/>";
 </div> <!-- end div asternicmain red -->
 <hr/>
 <div id='asternicfooter'>
-<div style='float:right;'><a href='http://www.asternic.biz' border=0><img src='modules/asternic_cdr/images/asternic_cdr_logo.jpg' alt='asternic cdr' border=0></a></div>
+<div style='float:right;'><a href='https://www.asternic.net' border=0><img src='<?php echo $appconfig['relative_path'];?>asternic_cdr_logo.jpg' alt='asternic cdr' border=0></a></div>
 </div> <!-- end div asternicfooter -->
 </div> <!-- end div asternic content -->
 <div style='clear:both;'></div>

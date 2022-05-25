@@ -79,7 +79,7 @@ function swf_bar($values,$width,$height,$divid,$stack)
     echo $return;
 }
 
-function print_exports($header_pdf,$data_pdf,$width_pdf,$title_pdf,$cover_pdf) {
+function print_exports($header_pdf,$data_pdf,$width_pdf,$title_pdf,$cover_pdf,$appconfig) {
     global $lang;
     global $language;
     $head_serial = serialize($header_pdf);
@@ -105,10 +105,10 @@ function print_exports($header_pdf,$data_pdf,$width_pdf,$title_pdf,$cover_pdf) {
         echo "<input type='hidden' name='width' value='".$width_serial."' />\n";
         echo "<input type='hidden' name='title' value='".$title_serial."' />\n";
         echo "<input type='hidden' name='cover' value='".$cover_serial."' />\n";
-        echo "<a href='javascript:void()' class='info'><input type=image name='pdf' src='images/asternic_pdf.gif' style='border:0;'><span>";
+        echo "<a href='javascript:void()' class='info'><input type=image name='pdf' src='${appconfig['relative_path']}asternic_pdf.gif' style='border:0;'><span>";
                 echo _('Export to PDF');
         echo "</span></a>\n";
-        echo "<a href='javascript:void()' class='info'><input type=image name='csv' src='images/asternic_excel.gif' style='border:0;'><span>"; 
+        echo "<a href='javascript:void()' class='info'><input type=image name='csv' src='${appconfig['relative_path']}asternic_excel.gif' style='border:0;'><span>"; 
                 echo _('Export to CSV/Excel');
         echo "</span></a>\n";
         echo "</form>";
@@ -132,8 +132,9 @@ function asternic_download($file) {
     include("download.php");
 }
 
-function asternic_getrecords( $MYVARS ) {
-    global $active_modules, $amp_conf, $db;
+function asternic_getrecords( $MYVARS ,$appconfig) {
+    global $active_modules, $amp_conf;
+    $db = $appconfig['db'];
 
     $channel = $MYVARS['channel'];
     $start   = $MYVARS['start'];

@@ -12,11 +12,11 @@ $menu[] = _('Incoming');
 $menu[] = _('Combined');
 $menu[] = _('Distribution');
 
-$link[] = "/admin/config.php?type=tool&display=asternic_cdr&tab=home";
-$link[] = "/admin/config.php?type=tool&display=asternic_cdr&tab=outgoing";
-$link[] = "/admin/config.php?type=tool&display=asternic_cdr&tab=incoming";
-$link[] = "/admin/config.php?type=tool&display=asternic_cdr&tab=combined";
-$link[] = "/admin/config.php?type=tool&display=asternic_cdr&tab=distribution";
+$link[] = "?type=tool&display=asternic_cdr&tab=home";
+$link[] = "?type=tool&display=asternic_cdr&tab=outgoing";
+$link[] = "?type=tool&display=asternic_cdr&tab=incoming";
+$link[] = "?type=tool&display=asternic_cdr&tab=combined";
+$link[] = "?type=tool&display=asternic_cdr&tab=distribution";
 
 $anchor = Array();
 

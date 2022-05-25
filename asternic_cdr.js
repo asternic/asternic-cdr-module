@@ -15,10 +15,10 @@ function List_move_around(direction, all) {
         box2 = "List_Extensions_available" + "";
     }
 
-    for (var i=0;i<document.forms[0].elements[box1].length;i++) {
-        if ((document.forms[0].elements[box1][i].selected || all)) {
-            document.forms[0].elements[box2].options[document.forms[0].elements[box2].length] =    new Option(document.forms[0].elements[box1].options[i].text, document.forms[0].elements[box1][i].value);
-            document.forms[0].elements[box1][i] = null;
+    for (var i=0;i<document.forms.asternic_cdr_form.elements[box1].length;i++) {
+        if ((document.forms.asternic_cdr_form.elements[box1][i].selected || all)) {
+            document.forms.asternic_cdr_form.elements[box2].options[document.forms.asternic_cdr_form.elements[box2].length] =    new Option(document.forms.asternic_cdr_form.elements[box1].options[i].text, document.forms.asternic_cdr_form.elements[box1][i].value);
+            document.forms.asternic_cdr_form.elements[box1][i] = null;
             i--;
         }
     }
@@ -27,9 +27,9 @@ function List_move_around(direction, all) {
 
 function List_check_submit() {
     box = "List_Extensions[]";
-    if (document.forms[0].elements[box]) {
-        for (var i=0;i<document.forms[0].elements[box].length;i++) {
-            document.forms[0].elements[box][i].selected = true;
+    if (document.forms.asternic_cdr_form.elements[box]) {
+        for (var i=0;i<document.forms.asternic_cdr_form.elements[box].length;i++) {
+            document.forms.asternic_cdr_form.elements[box][i].selected = true;
          }
     }
     return true;
@@ -40,64 +40,66 @@ function envia() {
     List_check_submit();
 
     box = "List_Extensions[]";
-    if (document.forms[0].elements[box].length == 0) {
+    if (document.forms.asternic_cdr_form.elements[box].length == 0) {
         alert("Please select at least one Extension");
         return false;
     }
 
-    month_start = parseInt(document.forms[0].month1.value) + 1;
-    month_end   = parseInt(document.forms[0].month2.value) + 1;
+    month_start = parseInt(document.forms.asternic_cdr_form.month1.value) + 1;
+    month_end   = parseInt(document.forms.asternic_cdr_form.month2.value) + 1;
 
-    fecha_s  = document.forms[0].year1.value  + '-';
+    fecha_s  = document.forms.asternic_cdr_form.year1.value  + '-';
 
     if(String(month_start).length == 1) {
         fecha_s += "0";
-    } 
+    }
     fecha_s += month_start + '-';
-    if(String(document.forms[0].day1.value).length == 1) {
+    if(String(document.forms.asternic_cdr_form.day1.value).length == 1) {
         fecha_s += "0";
     }
-    fecha_s += document.forms[0].day1.value   + ' ';
+    fecha_s += document.forms.asternic_cdr_form.day1.value   + ' ';
     fecha_s += '00:00:00';
 
-    fecha_check_s = document.forms[0].year1.value;
+    fecha_check_s = document.forms.asternic_cdr_form.year1.value;
     if(String(month_start).length == 1) {
         fecha_check_s += "0";
-    } 
+    }
     fecha_check_s += month_start;
-    if(String(document.forms[0].day1.value).length == 1) {
+    if(String(document.forms.asternic_cdr_form.day1.value).length == 1) {
         fecha_check_s += "0";
     }
-    fecha_check_s += document.forms[0].day1.value;
+    fecha_check_s += document.forms.asternic_cdr_form.day1.value;
 
-    fecha_check_e = document.forms[0].year2.value;
+    fecha_check_e = document.forms.asternic_cdr_form.year2.value;
     if(String(month_end).length == 1) {
         fecha_check_e += "0";
-    } 
+    }
     fecha_check_e += month_end;
-    if(String(document.forms[0].day2.value).length == 1) {
+    if(String(document.forms.asternic_cdr_form.day2.value).length == 1) {
         fecha_check_e += "0";
     }
-    fecha_check_e += document.forms[0].day2.value;
+    fecha_check_e += document.forms.asternic_cdr_form.day2.value;
 
-    fecha_e  = document.forms[0].year2.value  + '-';
+    fecha_e  = document.forms.asternic_cdr_form.year2.value  + '-';
     if(String(month_end).length == 1) {
         fecha_e += "0";
-    } 
+    }
     fecha_e += month_end + '-';
-    if(String(document.forms[0].day2.value).length == 1) {
+    if(String(document.forms.asternic_cdr_form.day2.value).length == 1) {
         fecha_e += "0";
     }
-    fecha_e += document.forms[0].day2.value   + ' ';
+    fecha_e += document.forms.asternic_cdr_form.day2.value   + ' ';
     fecha_e += '23:59:59';
 
-    document.forms[0].start.value = fecha_s;
-    document.forms[0].end.value   = fecha_e;
+    document.forms.asternic_cdr_form.start.value = fecha_s;
+    document.forms.asternic_cdr_form.end.value   = fecha_e;
+
+    console.log(fecha_s);
 
     if(fecha_check_e < fecha_check_s) {
         alert("Invalid date range");
-    } else { 
-      document.forms[0].submit();
+    } else {
+      document.forms.asternic_cdr_form.submit();
     }
     return false;
 }
@@ -124,27 +126,27 @@ function setdates(start,end) {
     y = end_day - 1;
     dstart.options[x].selected = true;
     dend.options[y].selected = true;
-    
+
     x = start_month - 1;
     y = end_month - 1;
     mstart.options[x].selected = true;
     mend.options[y].selected   = true;
 
-    for( var x = 0; x < ystart.options.length; x++ ) { 
-        if( ystart.options[x].value == '' + start_year + '' ) { 
-            ystart.options[x].selected = true; 
-            if( window.opera && document.importNode ) { 
-                window.setTimeout('MWJ_findSelect( \''+ystart.name+'\' ).options['+x+'].selected = true;',0); 
-            } 
-        } 
+    for( var x = 0; x < ystart.options.length; x++ ) {
+        if( ystart.options[x].value == '' + start_year + '' ) {
+            ystart.options[x].selected = true;
+            if( window.opera && document.importNode ) {
+                window.setTimeout('MWJ_findSelect( \''+ystart.name+'\' ).options['+x+'].selected = true;',0);
+            }
+        }
     }
-    for( var x = 0; x < yend.options.length; x++ ) { 
-        if( yend.options[x].value == '' + end_year + '' ) { 
-            yend.options[x].selected = true; 
-            if( window.opera && document.importNode ) { 
-                window.setTimeout('MWJ_findSelect( \''+yend.name+'\' ).options['+x+'].selected = true;',0); 
-            } 
-        } 
+    for( var x = 0; x < yend.options.length; x++ ) {
+        if( yend.options[x].value == '' + end_year + '' ) {
+            yend.options[x].selected = true;
+            if( window.opera && document.importNode ) {
+                window.setTimeout('MWJ_findSelect( \''+yend.name+'\' ).options['+x+'].selected = true;',0);
+            }
+        }
     }
 
 }
@@ -289,10 +291,10 @@ function reFill( y, oBot, oTop, oDown, oUp ) {
 
 ns4 = document.layers;
 ie4 = document.all;
-nn6 = document.getElementById && !document.all; 
+nn6 = document.getElementById && !document.all;
 
 function showObject(myobject) {
- 
+
   if (ns4) {
      eval("document."+myobject+".display = ''");
   }
@@ -341,13 +343,13 @@ function getRecords(channel,start,end,type,uri) {
 
     if (ie4) {
         if(document.all[channel].style.display == 'none') {
-           procesa=true;    
-        } 
+           procesa=true;
+        }
     }
     else if (nn6) {
         if(document.getElementById(channel).style.display == 'none') {
-           procesa=true;    
-        } 
+           procesa=true;
+        }
     }
 
     if(procesa==true) {
@@ -402,7 +404,7 @@ function ts_makeSortable(table) {
         var firstRow = table.rows[0];
     }
     if (!firstRow) return;
-    
+
     // We have a first row: assume it's the header, and make its contents clickable links
     for (var i=0;i<firstRow.cells.length;i++) {
         var cell = firstRow.cells[i];
@@ -416,7 +418,7 @@ function ts_getInnerText(el) {
     if (typeof el == "undefined") { return el };
     if (el.innerText) return el.innerText;    //Not needed but it is faster
     var str = "";
-    
+
     var cs = el.childNodes;
     var l = cs.length;
     for (var i = 0; i < l; i++) {
@@ -442,7 +444,7 @@ function ts_resortTable(lnk,clid) {
     var td = lnk.parentNode;
     var column = clid || td.cellIndex;
     var table = getParent(td,'TABLE');
-    
+
     // Work out a type for the column
     if (table.rows.length <= 1) return;
     var itm = ts_getInnerText(table.rows[1].cells[column]);
@@ -469,13 +471,13 @@ function ts_resortTable(lnk,clid) {
         ARROW = '&nbsp;&nbsp;&darr;';
         span.setAttribute('sortdir','down');
     }
-    
+
     // We appendChild rows that already exist to the tbody, so it moves them rather than creating new ones
     // don't do sortbottom rows
     for (i=0;i<newRows.length;i++) { if (!newRows[i].className || (newRows[i].className && (newRows[i].className.indexOf('sortbottom') == -1))) table.tBodies[0].appendChild(newRows[i]);}
     // do sortbottom rows only
     for (i=0;i<newRows.length;i++) { if (newRows[i].className && (newRows[i].className.indexOf('sortbottom') != -1)) table.tBodies[0].appendChild(newRows[i]);}
-    
+
     // Delete any other arrows there may be showing
     var allspans = document.getElementsByTagName("span");
     for (var ci=0;ci<allspans.length;ci++) {
@@ -485,7 +487,7 @@ function ts_resortTable(lnk,clid) {
             }
         }
     }
-        
+
     span.innerHTML = ARROW;
 }
 
@@ -519,7 +521,7 @@ function ts_sort_date(a,b) {
     return 1;
 }
 
-function ts_sort_currency(a,b) { 
+function ts_sort_currency(a,b) {
     aa = ts_getInnerText(a.cells[SORT_COLUMN_INDEX]).replace(/[^0-9.]/g,'');
     bb = ts_getInnerText(b.cells[SORT_COLUMN_INDEX]).replace(/[^0-9.]/g,'');
     return parseFloat(aa) - parseFloat(bb);
@@ -529,7 +531,7 @@ function ts_sort_numeric(a,b) {
     //alert(ts_getInnerText(a.cells[SORT_COLUMN_INDEX]));
     aa = parseFloat(ts_getInnerText(a.cells[SORT_COLUMN_INDEX]).replace(/[^0-9.]/g,''));
     if (isNaN(aa)) aa = 0;
-    bb = parseFloat(ts_getInnerText(b.cells[SORT_COLUMN_INDEX]).replace(/[^0-9.]/g,'')); 
+    bb = parseFloat(ts_getInnerText(b.cells[SORT_COLUMN_INDEX]).replace(/[^0-9.]/g,''));
     if (isNaN(bb)) bb = 0;
     return aa-bb;
 }
@@ -567,7 +569,7 @@ function addEvent(elm, evType, fn, useCapture)
   }
 }
 
- 
+
 /* SWFObject v2.1 <http://code.google.com/p/swfobject/>
     Copyright (c) 2007-2008 Geoff Stearns, Michael Williams, and Bobby van der Sluis
     This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
@@ -586,7 +588,7 @@ function TinyWav(pid, trigger) {
     this.doplaylist = false;
     this.icon;
 
-    // If one string passed -- 
+    // If one string passed --
     //         Stop any current playback, clear playlist and run play of only file
     // If no argument passed --
     //        Start/resume playback of playlist
@@ -600,7 +602,7 @@ function TinyWav(pid, trigger) {
             if (this.State != "STOPPED" || !this.playlist.length)
                 return;
             file = this.playlist[0];
-        } else 
+        } else
         if (typeof file == "object") {
             this.playlist = file;
             this.doplaylist = true;
@@ -673,7 +675,7 @@ function TinyWav(pid, trigger) {
     this.SoundState = function (state, position) {
         if (position != undefined) this.SoundPos = position;
         if (this.State == "PLAYING" && state=="STOPPED" && this.doplaylist) {
-            window.setTimeout((function(t){ 
+            window.setTimeout((function(t){
                 return function(){ t.Next(); };
             })(this), 50);
         }
@@ -737,8 +739,8 @@ function downloadVmail(file,iconid,ftype,display,tab) {
         $("#downloadform").submit();
         return false;
 //        var pars = "file="+file;
-//        $.ajax({ 
-//          url: "modules/asternic_cdr/download.php?file="+file 
+//        $.ajax({
+//          url: "modules/asternic_cdr/download.php?file="+file
 //        });
 }
 
