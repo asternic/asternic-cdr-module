@@ -197,6 +197,6 @@ msgid "Combined"
 msgstr "Combinado"
 
 msgid "Incoming / Outgoing"
-msgstr "Entrante / Saliente"
+msgstr "Entrantes / Salientes"
 
 
