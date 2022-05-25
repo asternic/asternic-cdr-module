@@ -193,4 +193,10 @@ msgstr "Martes"
 msgid "Monday"
 msgstr "Lunes"
 
+msgid "Combined"
+msgstr "Combinado"
+
+msgid "Incoming / Outgoing"
+msgstr "Entrante / Saliente"
+
 
