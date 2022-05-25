@@ -1240,7 +1240,7 @@ if($total_calls>0) {
                 echo "<tr $odd>\n";
 
 
-                echo "<td style='text-align: left;'><a style='cursor:pointer;' onclick=\"javascript:getRecords('$chan','$start','$end','$typerecord','$complete_self');\">";
+                echo "<td style='text-align: left;'><a style='cursor:pointer;' onclick=\"javascript:getRecords('$chan','${appconfig['start']}','${appconfig['end']}','$typerecord','$complete_self');\">";
                 echo "<img src='${appconfig['relative_path']}asternic_loading.gif' id='loading$chan' border=0 style=\"visibility: hidden; float: left;\">";
                 echo "{$appconfig['canals'][$chan]}</a></td>\n";
 
