@@ -11,15 +11,13 @@ function asternic_cdr_get_config($engine) {
     global $amp_conf, $db, $active_modules;
 }
 
-function return_timestamp($date_string)
-{
-  list ($year,$month,$day,$hour,$min,$sec) = preg_split("/-|:| /",$date_string,6);
-  $u_timestamp = mktime($hour,$min,$sec,$month,$day,$year);
-  return $u_timestamp;
+function return_timestamp($date_string) {
+    list ($year,$month,$day,$hour,$min,$sec) = preg_split("/-|:| /",$date_string,6);
+    $u_timestamp = mktime($hour,$min,$sec,$month,$day,$year);
+    return $u_timestamp;
 }
 
-function swf_bar($values,$width,$height,$divid,$stack)
-{
+function swf_bar($values,$width,$height,$divid,$stack) {
     global $config;
 
     if ($stack==1) {
@@ -54,38 +52,36 @@ function swf_bar($values,$width,$height,$divid,$stack)
 }
 
 function print_exports($header_pdf,$data_pdf,$width_pdf,$title_pdf,$cover_pdf,$appconfig) {
-    global $lang;
-    global $language;
-    $head_serial = serialize($header_pdf);
-    $data_serial = serialize($data_pdf);
+
+    $head_serial  = serialize($header_pdf);
+    $data_serial  = serialize($data_pdf);
     $width_serial = serialize($width_pdf);
     $title_serial = serialize($title_pdf);
     $cover_serial = serialize($cover_pdf);
-    $head_serial = rawurlencode($head_serial);
-    $data_serial = rawurlencode($data_serial);
+    $head_serial  = rawurlencode($head_serial);
+    $data_serial  = rawurlencode($data_serial);
     $width_serial = rawurlencode($width_serial);
     $title_serial = rawurlencode($title_serial);
     $cover_serial = rawurlencode($cover_serial);
 
-        $complete_self = $_SERVER['REQUEST_URI'];
-        //echo "<br/><form method=post action='modules/asternic_cdr/export.php'>\n";
-        echo "<br/><form method='post' action='$complete_self'>\n";
-        foreach($_REQUEST as $kkey=>$vval) {
-            echo "<input type='hidden' name='$kkey' value='".$vval."' />\n";
-        }
-        echo "<input type='hidden' name='action' value='export' />\n";
-        echo "<input type='hidden' name='head' value='".$head_serial."' />\n";
-        echo "<input type='hidden' name='rawdata' value='".$data_serial."' />\n";
-        echo "<input type='hidden' name='width' value='".$width_serial."' />\n";
-        echo "<input type='hidden' name='title' value='".$title_serial."' />\n";
-        echo "<input type='hidden' name='cover' value='".$cover_serial."' />\n";
-        echo "<a href='javascript:void()' class='info'><input type=image name='pdf' src='${appconfig['relative_path']}asternic_pdf.gif' style='border:0;'><span>";
-                echo _('Export to PDF');
-        echo "</span></a>\n";
-        echo "<a href='javascript:void()' class='info'><input type=image name='csv' src='${appconfig['relative_path']}asternic_excel.gif' style='border:0;'><span>"; 
-                echo _('Export to CSV/Excel');
-        echo "</span></a>\n";
-        echo "</form>";
+    $complete_self = $_SERVER['REQUEST_URI'];
+    echo "<br/><form method='post' action='$complete_self'>\n";
+    foreach($_REQUEST as $kkey=>$vval) {
+        echo "<input type='hidden' name='$kkey' value='".$vval."' />\n";
+    }
+    echo "<input type='hidden' name='action' value='export' />\n";
+    echo "<input type='hidden' name='head' value='".$head_serial."' />\n";
+    echo "<input type='hidden' name='rawdata' value='".$data_serial."' />\n";
+    echo "<input type='hidden' name='width' value='".$width_serial."' />\n";
+    echo "<input type='hidden' name='title' value='".$title_serial."' />\n";
+    echo "<input type='hidden' name='cover' value='".$cover_serial."' />\n";
+    echo "<a href='javascript:void()' class='info'><input type=image name='pdf' src='${appconfig['relative_path']}asternic_pdf.gif' style='border:0;'><span>";
+    echo _('Export to PDF');
+    echo "</span></a>\n";
+    echo "<a href='javascript:void()' class='info'><input type=image name='csv' src='${appconfig['relative_path']}asternic_excel.gif' style='border:0;'><span>"; 
+    echo _('Export to CSV/Excel');
+    echo "</span></a>\n";
+    echo "</form>";
 }
 
 function seconds2minutes($segundos) {
@@ -93,8 +89,6 @@ function seconds2minutes($segundos) {
     $minutos  = intval($segundos % 3600 ) / 60;
     $segundos = $segundos % 60;
     $ret = sprintf("%02d:%02d:%02d",$horas,$minutos,$segundos);
-
-//    return "$minutos:$segundos";
     return $ret;
 }
 
@@ -107,13 +101,13 @@ function asternic_download($file) {
 }
 
 function asternic_getrecords( $MYVARS ,$appconfig) {
-    global $active_modules, $amp_conf;
+
     $db = $appconfig['db'];
 
     $channel = $MYVARS['channel'];
     $start   = $MYVARS['start'];
     $end     = $MYVARS['end'];
-    $gtype    = $MYVARS['direction'];
+    $gtype   = $MYVARS['direction'];
     $condicionextra="";
 
     if($gtype=='outgoing') {
@@ -124,133 +118,128 @@ function asternic_getrecords( $MYVARS ,$appconfig) {
         $otherchanfield = "channel";
     }
 
+    if($gtype=='combined') {
+        $query = "SELECT substring(channel,1,locate(\"-\",channel,length(channel)-8)-1) AS chan1,";
+        $query .= "substring(dstchannel,1,locate(\"-\",dstchannel,length(dstchannel)-8)-1) AS chan2,";
+        $query.= "billsec,duration,duration-billsec as ringtime,src,";
+        $query.="IF(dst='s',dcontext,dst) as dst,calldate,disposition,accountcode,recordingfile,uniqueid FROM asteriskcdrdb.cdr ";
+        $query.= "WHERE calldate >= '$start' AND calldate <= '$end' AND (duration-billsec) >=0 $condicionextra ";
+        $query.= "HAVING chan1 IN ('$channel') OR chan2 IN ('$channel') ORDER BY calldate ";
+    } else {
+        $query = "SELECT substring($chanfield,1,locate(\"-\",$chanfield,length($chanfield)-8)-1) AS chan1,";
+        $query.= "billsec,duration,duration-billsec as ringtime,src,";
+        $query.="IF(dst='s',dcontext,dst) as dst,calldate,disposition,accountcode,recordingfile,uniqueid FROM asteriskcdrdb.cdr ";
+        $query.= "WHERE calldate >= '$start' AND calldate <= '$end' AND (duration-billsec) >=0 $condicionextra ";
+        $query.= "HAVING chan1 IN ('$channel') ORDER BY calldate";
+    }
 
-if($gtype=='combined') {
-    $query = "SELECT substring(channel,1,locate(\"-\",channel,length(channel)-8)-1) AS chan1,";
-    $query .= "substring(dstchannel,1,locate(\"-\",dstchannel,length(dstchannel)-8)-1) AS chan2,";
-    $query.= "billsec,duration,duration-billsec as ringtime,src,";
-    $query.="IF(dst='s',dcontext,dst) as dst,calldate,disposition,accountcode,recordingfile,uniqueid FROM asteriskcdrdb.cdr ";
-    $query.= "WHERE calldate >= '$start' AND calldate <= '$end' AND (duration-billsec) >=0 $condicionextra ";
-    $query.= "HAVING chan1 IN ('$channel') OR chan2 IN ('$channel') ORDER BY calldate ";
+    $me=true;
 
-} else {
-    $query = "SELECT substring($chanfield,1,locate(\"-\",$chanfield,length($chanfield)-8)-1) AS chan1,";
-    $query.= "billsec,duration,duration-billsec as ringtime,src,";
-    $query.="IF(dst='s',dcontext,dst) as dst,calldate,disposition,accountcode,recordingfile,uniqueid FROM asteriskcdrdb.cdr ";
-    $query.= "WHERE calldate >= '$start' AND calldate <= '$end' AND (duration-billsec) >=0 $condicionextra ";
-    $query.= "HAVING chan1 IN ('$channel') ORDER BY calldate";
-}
+    $res = $db->query($query);
 
-$me=true;
+    if(DB::IsError($res)) {
+        die($res->getMessage());
+    }
 
-$res = $db->query($query);
+    $ftype = $_REQUEST['type'];
+    $fdisplay = $_REQUEST['display'];
+    $ftab = $gtype;
 
-if(DB::IsError($res)) {
-    die($res->getMessage());
-}
+    $cont=0;
+    while (is_array($row = $res->fetchRow(DB_FETCHMODE_ASSOC))) {
+        if (!(substr($row['accountcode'],0,5)=='Local' && $dispo[$row['disposition']]=='BUSY' && $row[9]=='ResetCDR')) {
+            $cont++;
+            $disposition = $row['disposition'];
 
-$ftype = $_REQUEST['type'];
-$fdisplay = $_REQUEST['display'];
-$ftab = $gtype;
+            if($gtype=='combined') {
+                if($row['chan1']<>$channel) { $direction='Incoming'; } else { $direction='Outgoing'; }
+                $campo=($row['chan1']<>$channel)?$row['chan2']:$row['chan1'];
+            } else {
+                $campo=$row['chan1'];
+            }
 
-$cont=0;
-while (is_array($row = $res->fetchRow(DB_FETCHMODE_ASSOC))) {
-      if (!(substr($row['accountcode'],0,5)=='Local' && $dispo[$row['disposition']]=='BUSY' && $row[9]=='ResetCDR')) {
-         $cont++;
-         $disposition = $row['disposition'];
+            //echo "campo $campo, ".$row['chan1']."=".$row['chan2']."<br>";
 
-         if($gtype=='combined') {
-            if($row['chan1']<>$channel) { $direction='Incoming'; } else { $direction='Outgoing'; }
-            $campo=($row['chan1']<>$channel)?$row['chan2']:$row['chan1'];
-         } else {
-            $campo=$row['chan1'];
-         }
+            if(!isset($detail[$campo])) {
+                $detail[$campo]="";
+            }
 
-//echo "campo $campo, ".$row['chan1']."=".$row['chan2']."<br>";
+            $me = ! $me;
+            if($me==true) {
+                $odclass="class='odd'";
+            } else {
+                $odclass="";
+            }
+            $bill_print = seconds2minutes($row['billsec']);
 
-         if(!isset($detail[$campo])) {
-             $detail[$campo]="";
-         }
+            $detail[$campo].= "<tr $odclass>\n<td>$cont</td>\n";
+            if($gtype=='combined') {
+                $detail[$campo].= "<td>$direction</td>\n";
+            }
+            $detail[$campo].= "<td style='text-align: center;' >".$row['calldate']."</td>\n";
+            $detail[$campo].= "<td>".$row['src']."</td><td>".$row['dst']."</td>\n";
+            $detail[$campo].= "<td align=right>".$bill_print."</td>\n";
+            $detail[$campo].="<td align=right>".$row['ringtime']." "._('secs')."</td>\n";
+            $detail[$campo].= "<td style='text-align: center;'>";
 
-         $me = ! $me;
-         if($me==true) {
-             $odclass="class='odd'";
-         } else {
-             $odclass="";
-         }
-         $bill_print = seconds2minutes($row['billsec']);
+            $pertes = preg_split("/ /",$row['calldate']);
+            $partes = preg_split("/-/",$pertes[0]);
+            $year   = $partes[0];
+            $month  = $partes[1];
+            $day    = $partes[2];
 
-         $detail[$campo].= "<tr $odclass>\n<td>$cont</td>\n";
-         if($gtype=='combined') {
-             $detail[$campo].= "<td>$direction</td>\n";
-         }
-         $detail[$campo].= "<td style='text-align: center;' >".$row['calldate']."</td>\n";
-         $detail[$campo].= "<td>".$row['src']."</td><td>".$row['dst']."</td>\n";
-         $detail[$campo].= "<td align=right>".$bill_print."</td>\n";
-         $detail[$campo].="<td align=right>".$row['ringtime']." "._('secs')."</td>\n";
-         $detail[$campo].= "<td style='text-align: center;'>";
+            if($row['disposition']=="NO ANSWER" || $row['disposition']=="FAILED") {
+                $detail[$campo].="<span style='color: red;'>";
+            } elseif($row['disposition']=="BUSY") {
+                $detail[$campo].="<span style='color: orange;'>";
+            } else {
+                $detail[$campo].="<span style='color: green;'>";
+            }
 
-         $pertes = preg_split("/ /",$row['calldate']);
-         $partes = preg_split("/-/",$pertes[0]);
-         $year   = $partes[0];
-         $month  = $partes[1];
-         $day    = $partes[2];
+            $detail[$campo].= $row['disposition'];
+            $detail[$campo].= "</span></td>";
+            $detail[$campo].= "\n<td>";
 
-         if($row['disposition']=="NO ANSWER" || $row['disposition']=="FAILED") {
-            $detail[$campo].="<span style='color: red;'>";
-         } elseif($row['disposition']=="BUSY") {
-            $detail[$campo].="<span style='color: orange;'>";
-         } else {
-            $detail[$campo].="<span style='color: green;'>";
-         }
+            $uni = $row['uniqueid'];
+            $uni = str_replace(".","",$uni);
 
-          $detail[$campo].= $row['disposition'];
-          $detail[$campo].= "</span></td>";
-          $detail[$campo].= "\n<td>";
+            if($row['recordingfile']<>"") {
+                $actualfile = "$year/$month/$day/".$row['recordingfile'];
+                $detail[$campo].="<a href=\"javascript:void(0);\" onclick='javascript:playVmail(\"".$actualfile."\",\"play".$uni."\");'>";
+                $detail[$campo].="<div class='playicon' title='Play' id='play".$uni."'  style='float:left;'>";
+                $detail[$campo].="<img src='images/blank.gif' alt='pixel' height='16' width='16' border='0'>";
+                $detail[$campo].="</div></a>";
+                $detail[$campo].="<a href=\"javascript:void(0); return false;\" onclick='javascript:downloadVmail(\"".$actualfile."\",\"play".$uni."\",\"$ftype\",\"$fdisplay\",\"$ftab\"); return false;'>";
+                $detail[$campo].="<div class='downicon' title='Download' id='dload".$uni."'  style='float:left;'>";
+                $detail[$campo].="<img src='images/blank.gif' alt='pixel' height='16' width='16' border='0'>";
+                $detail[$campo].="</div></a>";
+            } else {
+                $detail[$campo].= "&nbsp;";
+            }
+            $detail[$campo].= "</td>\n";
+            $detail[$campo].= "\n</tr>\n";
+        } 
+    }
 
-          $uni = $row['uniqueid'];
-          $uni = str_replace(".","",$uni);
+    echo "<table width='99%' cellpadding=3 cellspacing=3 border=0 id='table${channel}' class='sortable'>\n";
+    echo "<thead><tr><td bgcolor='#ddcc00'>#</td>";
+    if($gtype=='combined') {
+        echo "<td bgcolor='#ddcc00'>Direction</td>";
+    }
+    echo "<td bgcolor='#ddcc00' align='center'>"._('Date')."</td>\n";
+    echo "<td bgcolor='#ddcc00'>"._('From')."</td>\n";
+    echo "<td bgcolor='#ddcc00'>"._('To')."</td>\n";
+    echo "<td bgcolor='#ddcc00' align='right'>"._('Billable Time')."</td>\n";
+    echo "<td bgcolor='#ddcc00' align='right'>"._('Ring Time')."</td>\n";
+    echo "<td bgcolor='#ddcc00' align='center'>"._('Disposition')."</td>\n";
+    echo "<td bgcolor='#ddcc00' align='center'>"._('Listen')."</td></tr></thead>\n";
+    echo "<tbody>".$detail[$channel]."</tbody>\n";
+    echo "</table>\n";
 
-          if($row['recordingfile']<>"") {
-              $actualfile = "$year/$month/$day/".$row['recordingfile'];
-              $detail[$campo].="<a href=\"javascript:void(0);\" onclick='javascript:playVmail(\"".$actualfile."\",\"play".$uni."\");'>";
-              $detail[$campo].="<div class='playicon' title='Play' id='play".$uni."'  style='float:left;'>";
-              $detail[$campo].="<img src='images/blank.gif' alt='pixel' height='16' width='16' border='0'>";
-              $detail[$campo].="</div></a>";
-              $detail[$campo].="<a href=\"javascript:void(0); return false;\" onclick='javascript:downloadVmail(\"".$actualfile."\",\"play".$uni."\",\"$ftype\",\"$fdisplay\",\"$ftab\"); return false;'>";
-              $detail[$campo].="<div class='downicon' title='Download' id='dload".$uni."'  style='float:left;'>";
-              $detail[$campo].="<img src='images/blank.gif' alt='pixel' height='16' width='16' border='0'>";
-              $detail[$campo].="</div></a>";
-          } else {
-              $detail[$campo].= "&nbsp;";
-          }
-          $detail[$campo].= "</td>\n";
-          $detail[$campo].= "\n</tr>\n";
-      } 
-
-}
-
-echo "<table width='99%' cellpadding=3 cellspacing=3 border=0 id='table${channel}' class='sortable'>\n";
-echo "<thead><tr><td bgcolor='#ddcc00'>#</td>";
-if($gtype=='combined') {
-echo "<td bgcolor='#ddcc00'>Direction</td>";
-}
-echo "<td bgcolor='#ddcc00' align='center'>"._('Date')."</td>\n";
-echo "<td bgcolor='#ddcc00'>"._('From')."</td>\n";
-echo "<td bgcolor='#ddcc00'>"._('To')."</td>\n";
-echo "<td bgcolor='#ddcc00' align='right'>"._('Billable Time')."</td>\n";
-echo "<td bgcolor='#ddcc00' align='right'>"._('Ring Time')."</td>\n";
-echo "<td bgcolor='#ddcc00' align='center'>"._('Disposition')."</td>\n";
-echo "<td bgcolor='#ddcc00' align='center'>"._('Listen')."</td></tr></thead>\n";
-echo "<tbody>".$detail[$channel]."</tbody>\n";
-echo "</table>\n";
-
-
-$complete_self = $_SERVER['REQUEST_URI'];
-echo "<form id='downloadform' method='get' action='$complete_self'><input type=hidden name='file' id='downloadfile' value=''><input type=hidden name='action' value='download'><input type='hidden' name='type' id='dtype' value=''><input type='hidden' id='idisplay' name='display' value=''> <input type='hidden' id='itab' name='tab' value=''></form>";
+    $complete_self = $_SERVER['REQUEST_URI'];
+    echo "<form id='downloadform' method='get' action='$complete_self'><input type=hidden name='file' id='downloadfile' value=''><input type=hidden name='action' value='download'><input type='hidden' name='type' id='dtype' value=''><input type='hidden' id='idisplay' name='display' value=''> <input type='hidden' id='itab' name='tab' value=''></form>";
 
 }
-
 
 define('FPDF_FONTPATH',dirname(__FILE__).'/lib/font/');
 include_once(dirname(__FILE__) . "/lib/fpdf.php");
@@ -258,85 +247,79 @@ include_once(dirname(__FILE__) . "/lib/fpdf.php");
 class PDF extends FPDF
 {
 
-function Footer()
-{
-    global $lang;
-    global $language;
-    //Go to 1.5 cm from bottom
-    $this->SetY(-15);
-    //Select Arial italic 8
-    $this->SetFont('Arial','I',8);
-    //Print centered page number
-    $this->Cell(0,10,$lang["$language"]['page'].' '.$this->PageNo(),0,0,'C');
-}
-
-function Cover($cover)
-{
-    $this->SetFont('Arial','',15);
-    $this->MultiCell(150,9,$cover);
-    $this->Ln();
-}
-
-function Header()
-{
-    global $title;
-    //Select Arial bold 15
-    $this->SetFont('Arial','B',15);
-    //Move to the right
-    $this->Cell(85);
-    //Framed title
-    $this->Cell(30,10,$title,0,0,'C');
-    //Line break
-    $this->Ln(10);
-}
-
-function TableHeader($header,$w)
-{
-    $this->SetFillColor(255,0,0);
-    $this->SetTextColor(255);
-    $this->SetDrawColor(128,0,0);
-    $this->SetLineWidth(.3);
-    $this->SetFont('','B',11);
-
-    for($i=0;$i<count($header);$i++)
-        $this->Cell($w[$i],10,$header[$i],1,0,'C',1);
-    $this->Ln();
-}
-
-//Colored table
-function FancyTable($header,$data,$w)
-{
-
-    $this->TableHeader($header,$w);
-
-    //Color and font restoration
-    $this->SetFillColor(224,235,255);
-    $this->SetTextColor(0);
-    $this->SetFont('');
-    //Data
-    $fill=0;
-    $supercont=1;
-    foreach($data as $row)
-    {
-        $contador=0;
-        foreach($row as $valor) {
-            $this->Cell($w[$contador],6,$valor,'LR',0,'C',$fill);
-            $contador++;
-        }
-        $this->Ln();
-        $fill=!$fill;
-        if($supercont%40 == 0) {
-            $this->Cell(array_sum($w),0,'','T');
-            $this->AddPage();
-            $this->TableHeader($header,$w);
-            $this->SetFillColor(224,235,255);
-            $this->SetTextColor(0);
-            $this->SetFont('');
-        }
-        $supercont++;
+    function Footer() {
+        global $lang;
+        global $language;
+        //Go to 1.5 cm from bottom
+        $this->SetY(-15);
+        //Select Arial italic 8
+        $this->SetFont('Arial','I',8);
+        //Print centered page number
+        $this->Cell(0,10,$lang["$language"]['page'].' '.$this->PageNo(),0,0,'C');
     }
-    $this->Cell(array_sum($w),0,'','T');
-}
+
+    function Cover($cover) {
+        $this->SetFont('Arial','',15);
+        $this->MultiCell(150,9,$cover);
+        $this->Ln();
+    }
+
+    function Header() {
+        global $title;
+        //Select Arial bold 15
+        $this->SetFont('Arial','B',15);
+        //Move to the right
+        $this->Cell(85);
+        //Framed title
+        $this->Cell(30,10,$title,0,0,'C');
+        //Line break
+        $this->Ln(10);
+    }
+
+    function TableHeader($header,$w) {
+        $this->SetFillColor(255,0,0);
+        $this->SetTextColor(255);
+        $this->SetDrawColor(128,0,0);
+        $this->SetLineWidth(.3);
+        $this->SetFont('','B',11);
+
+        for($i=0;$i<count($header);$i++)
+            $this->Cell($w[$i],10,$header[$i],1,0,'C',1);
+        $this->Ln();
+    }
+
+    //Colored table
+    function FancyTable($header,$data,$w) {
+
+        $this->TableHeader($header,$w);
+
+        //Color and font restoration
+        $this->SetFillColor(224,235,255);
+        $this->SetTextColor(0);
+        $this->SetFont('');
+        //Data
+        $fill=0;
+        $supercont=1;
+        foreach($data as $row) {
+            $contador=0;
+            foreach($row as $valor) {
+                $this->Cell($w[$contador],6,$valor,'LR',0,'C',$fill);
+                $contador++;
+            }
+            $this->Ln();
+            $fill=!$fill;
+            if($supercont%40 == 0) {
+                $this->Cell(array_sum($w),0,'','T');
+                $this->AddPage();
+                $this->TableHeader($header,$w);
+                $this->SetFillColor(224,235,255);
+                $this->SetTextColor(0);
+                $this->SetFont('');
+            }
+            $supercont++;
+        }
+        $this->Cell(array_sum($w),0,'','T');
+    }
 }
 
 function asternic_export_csv($header,$data) {
