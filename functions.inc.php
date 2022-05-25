@@ -7,34 +7,8 @@ if(isset($_SERVER['PATH_INFO'])) {
 }
 
 function asternic_cdr_get_config($engine) {
-    // Executed on APPLY in FreePBX, we regenerate the fop2buttons if needed
+    // Executed on APPLY in FreePBX
     global $amp_conf, $db, $active_modules;
-
-
-}
-
-function asternic_cdr_query() {
-
-    global $active_modules, $amp_conf, $db;
-
-    $sql = "SELECT exten,privacy,label,`group`,email,channel,queuechannel,originatechannel,customastdb,spyoptions,external FROM fop2buttons";
-    $results = $db->getAll($sql, DB_FETCHMODE_ASSOC);
-    if(DB::IsError($results)) {
-        die($results->getMessage());
-    }
-    foreach ($results as $result) {
-        $fopprivacy[$result['exten']]   = $result['privacy'];
-        $foplabel[$result['exten']]     = $result['label'];
-        $fopgroup[$result['exten']]     = $result['group'];
-        $fopemail[$result['exten']]     = $result['email'];
-        $fopchannel[$result['exten']]   = $result['channel'];
-        $fopqchannel[$result['exten']]  = $result['queuechannel'];
-        $fopochannel[$result['exten']]  = $result['originatechannel'];
-        $fopcustastdb[$result['exten']] = $result['customastdb'];
-        $fopspyoption[$result['exten']] = $result['spyoptions'];
-        $fopexternal[$result['exten']]  = $result['external'];
-    }
-
 }
 
 function return_timestamp($date_string)
