@@ -299,11 +299,11 @@ function asternic_getrecords( $MYVARS ,$appconfig) {
                     $actualfile = $row['recordingfile'];
                 }
                 $detail[$campo].="<a href=\"javascript:void(0);\" onclick='javascript:playVmail(\"".$actualfile."\",\"play".$uni."\");'>";
-                $detail[$campo].="<div class='playicon' title='Play' id='play".$uni."'  style='float:left;'>";
+                $detail[$campo].="<div class='playicon' title='"._('Play')."' id='play".$uni."'  style='float:left;'>";
                 $detail[$campo].="<img src='images/blank.gif' alt='pixel' height='16' width='16' border='0'>";
                 $detail[$campo].="</div></a>";
                 $detail[$campo].="<a href=\"javascript:void(0); return false;\" onclick='javascript:downloadVmail(\"".$actualfile."\",\"play".$uni."\",\"$ftype\",\"$fdisplay\",\"$ftab\"); return false;'>";
-                $detail[$campo].="<div class='downicon' title='Download' id='dload".$uni."'  style='float:left;'>";
+                $detail[$campo].="<div class='downicon' title='"._('Download')."' id='dload".$uni."'  style='float:left;'>";
                 $detail[$campo].="<img src='images/blank.gif' alt='pixel' height='16' width='16' border='0'>";
                 $detail[$campo].="</div></a>";
             } else {

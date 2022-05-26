@@ -216,3 +216,9 @@ msgstr "Disposición"
 
 msgid "Listen"
 msgstr "Escuchar"
+
+msgid "Play"
+msgstr "Reproducir"
+
+msgid "Download"
+msgstr "Descargar"
