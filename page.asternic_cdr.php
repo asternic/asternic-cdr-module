@@ -29,7 +29,6 @@ if(preg_match("/\/admin/",$basedir)) {
 } else {
     $appconfig['relative_path'] = "admin/images/";
 }
-
 if(isset($_POST['List_Extensions'])) {
     $appconfig['extension']="";
     if(is_array($_POST['List_Extensions'])) {
@@ -112,11 +111,65 @@ if(isset($_REQUEST['action'])) {
     } else if($_REQUEST['action']=="export") {
         asternic_export($_REQUEST);
         die();
-    } else if($_REQUEST['action']=="download") {
-        asternic_download($_REQUEST);
-        die();
     }
 }
+
+if(isset($_REQUEST['file'])) {
+    asternic_download();
+}
+
+echo "
+<style>
+.playicon {
+background:url('${appconfig['relative_path']}asternic_playicon.png');
+background-repeat: no-repeat;
+width: 16px;
+height: 16px;
+margin-top: 2px;
+}
+.pauseicon {
+background:url('${appconfig['relative_path']}asternic_pauseicon.png');
+background-repeat: no-repeat;
+width: 16px;
+height: 16px;
+margin-top: 2px;
+}
+.downicon {
+background:url('${appconfig['relative_path']}asternic_downicon.png');
+background-repeat: no-repeat;
+width: 16px;
+height: 16px;
+margin-top: 2px;
+}
+.loadingicon {
+background:url('${appconfig['relative_path']}asternic_loading.gif');
+background-repeat: no-repeat;
+width: 16px;
+height: 16px;
+margin-top: 2px;
+}
+.erroricon {
+background:url('${appconfig['relative_path']}asternic_erroricon.png');
+background-repeat: no-repeat;
+width: 16px;
+height: 16px;
+margin-top: 2px;
+}
+
+#asterniccontents thead tr th {
+    height: 32px;
+    aline-height: 32px;
+    text-align: center;
+    color: #1c5d79;
+    background-image: url(${appconfig['relative_path']}asternic_col_bg.gif);
+    background-repeat: repeat;
+    border-left:solid 1px #FF9900;
+    border-right:solid 1px #FF9900;
+    border-collapse: collapse;
+}
+</style>
+";
+
 
 if(!isset($_POST['start'])) {
 

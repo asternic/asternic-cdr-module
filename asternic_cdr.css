@@ -214,7 +214,7 @@ _border: 1px solid red;
  =====================================
 */
 
-table {
+#asterniccontents table {
 	width: 99%;
 	margin:0; 
  	padding:0;
@@ -222,10 +222,11 @@ table {
 	color: #1c5d79;
 	
 }
-table, tr, th, td {
+#asterniccontents table, #asterniccontents tr, #asterniccontents th, #asterniccontents td {
 	border-collapse: collapse;
 }
-caption {
+
+#asterniccontents caption {
 	margin:0; 
  	padding:0;
 	background: #f3f3f3;
@@ -244,40 +245,28 @@ caption {
 
 /* HEAD */
 
-thead {
+#asterniccontents thead {
 	background-color: #FFFFFF;
 	border: none;
-}
-thead tr th {
-	height: 32px;
-	aline-height: 32px;
-	text-align: center;
-	color: #1c5d79;
-	background-image: url(images/asternic_col_bg.gif);
-	background-repeat: repeat;
-	border-left:solid 1px #FF9900;
-	border-right:solid 1px #FF9900;	
-	border-collapse: collapse;
-	
 }
 
 /* BODY */
 
-tbody tr {
+#asterniccontents table tbody tr {
 	background: #dfedf3;
 	font-size: 110%;
 }
-tbody tr.odd {
+#asterniccontents table tbody tr.odd {
 	background: #F0FFFF;
 }
-tbody tr:hover, tbody tr.odd:hover {
+#asterniccontents table tbody tr:hover, tbody tr.odd:hover {
 	background: #ffffff;
 }
-tbody tr th, tbody tr td {
+#asterniccontents table tbody tr th, #asterniccontents tbody tr td {
 	padding: 6px;
 	border: solid 1px #326e87;
 }
-tbody tr th {
+#asterniccontents table tbody tr th {
 	background: #1c5d79;
 	font-family: "Trebuchet MS", Trebuchet, Arial, sans-serif;	
 	font-size: 100%;
@@ -287,27 +276,23 @@ tbody tr th {
 	color: #FFFFFF;
 	border-bottom: solid 1px white;
 }
-tbody tr th:hover {
-	background: #ffffff;
-
-}
 
 /* LINKS */
 
-table a {
+#asterniccontents table a {
 	color: #FF6600;
 	text-decoration: none;
 	font-size: 110%;
 	//border-bottom: solid 1px white;
 }
-table a:hover {
+#asterniccontents table a:hover {
 	color: #FF9900;
 	border-bottom: none;
 }
 
 /* FOOTER */
 
-tfoot {
+#asterniccontents table tfoot {
 	background: #f3f3f3;
 	height: 24px;
 	line-height: 24px;
@@ -320,16 +305,11 @@ tfoot {
 	border-top: solid 2px #326e87;
 	border-bottom: dashed 1px #c2c2c2;
 }
-tfoot tr th, tfoot tr td {
-	/*padding: .1em .6em;*/
-	
-}
-tfoot tr th {
+#asterniccontents tabletfoot tr th {
 	border-top: solid 1px #326e87;
 }
-tfoot tr td {
+#asterniccontents tabletfoot tr td {
 	text-align: right;
-	
 }
 
 /* Sortable tables */
@@ -343,28 +323,3 @@ table.sortable span.sortarrow {
     color: black;
     text-decoration: none;
 }
-
-
-.playicon {
-background:url("images/asternic_playicon.png");
-background-repeat: no-repeat;
-width: 16px;
-height: 16px;
-margin-top: 2px;
-}
-.pauseicon {
-background:url("images/asternic_pauseicon.png");
-background-repeat: no-repeat;
-width: 16px;
-height: 16px;
-margin-top: 2px;
-}
-.downicon {
-background:url("images/asternic_downicon.png");
-background-repeat: no-repeat;
-width: 16px;
-height: 16px;
-margin-top: 2px;
-}
-
-

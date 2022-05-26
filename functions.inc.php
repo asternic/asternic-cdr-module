@@ -293,7 +293,11 @@ function asternic_getrecords( $MYVARS ,$appconfig) {
             $uni = str_replace(".","",$uni);
 
             if($row['recordingfile']<>"") {
-                $actualfile = "$year/$month/$day/".$row['recordingfile'];
+                if(!preg_match("/\/",$row['recordingfile'])) {
+                    $actualfile = "$year/$month/$day/".$row['recordingfile'];
+                } else {
+                    $actualfile = $row['recordingfile'];
+                }
                 $detail[$campo].="<a href=\"javascript:void(0);\" onclick='javascript:playVmail(\"".$actualfile."\",\"play".$uni."\");'>";
                 $detail[$campo].="<div class='playicon' title='Play' id='play".$uni."'  style='float:left;'>";
                 $detail[$campo].="<img src='images/blank.gif' alt='pixel' height='16' width='16' border='0'>";
