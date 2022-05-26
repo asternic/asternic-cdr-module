@@ -143,10 +143,10 @@ msgid "Avg Duration"
 msgstr "Prom. Duración"
 
 msgid "Total Ring Time"
-msgstr "Tiempo Ring Total"
+msgstr "Tiempo Timbre Total"
 
 msgid "Avg Ring Time"
-msgstr "Prom. Tiempo Ring"
+msgstr "Prom. Tiempo Timbre"
 
 msgid "days"
 msgstr "días"
@@ -199,4 +199,20 @@ msgstr "Combinado"
 msgid "Incoming / Outgoing"
 msgstr "Entrantes / Salientes"
 
+msgid "Ring Time"
+msgstr "Tiempo Timbre"
 
+msgid "Billable Time"
+msgstr "Tiempo Facturable"
+
+msgid "From"
+msgstr "Desde"
+
+msgid "To"
+msgstr "Hacia"
+
+msgid "Disposition"
+msgstr "Disposición"
+
+msgid "Listen"
+msgstr "Escuchar"
