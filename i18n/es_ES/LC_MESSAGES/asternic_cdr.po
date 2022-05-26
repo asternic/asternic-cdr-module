@@ -222,3 +222,12 @@ msgstr "Reproducir"
 
 msgid "Download"
 msgstr "Descargar"
+
+msgid "Total Internal Calls"
+msgstr "Total de llamadas internas"
+
+msgid "Total Internal Minutes"
+msgstr "Total de Minutos Internas"
+
+msgid "Average Internal Call Duration"
+msgstr "Duración Promedio Internas"
