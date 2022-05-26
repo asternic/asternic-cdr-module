@@ -293,7 +293,7 @@ function asternic_getrecords( $MYVARS ,$appconfig) {
             $uni = str_replace(".","",$uni);
 
             if($row['recordingfile']<>"") {
-                if(!preg_match("/\/",$row['recordingfile'])) {
+                if(!preg_match("/^\//",$row['recordingfile'])) {
                     $actualfile = "$year/$month/$day/".$row['recordingfile'];
                 } else {
                     $actualfile = $row['recordingfile'];
