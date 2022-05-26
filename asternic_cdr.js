@@ -572,7 +572,7 @@ function addEvent(elm, evType, fn, useCapture)
 
 function playVmail(file,iconid) {
     if(typeof(sound[iconid])==="undefined") {
-        var getfile = 'index.php?'+window.location.search.substring(1)+'&file='+file;
+        var getfile = '?'+window.location.search.substring(1)+'&file='+file;
 
         pauseaction[iconid]='pause';
 
