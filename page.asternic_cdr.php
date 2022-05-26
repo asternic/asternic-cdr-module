@@ -103,7 +103,7 @@ $appconfig['db']=$db;
 
 if(isset($_REQUEST['action'])) {
     if($_REQUEST['action']=="download") {
-        asternic_download($_REQUEST['file']);
+        asternic_download();
         die();
     } else if($_REQUEST['action']=="getrecords") {
         asternic_getrecords($_REQUEST,$appconfig);

@@ -185,7 +185,7 @@ function remove_quotes($argument) {
     return substr($argument,1,-1);
 }   
 
-function asternic_download($file) {
+function asternic_download() {
     include("download.php");
 }
 
