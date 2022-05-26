@@ -14,7 +14,7 @@ if(ini_get('zlib.output_compression')) {
   ini_set('zlib.output_compression', 'Off');
 }
 
-$file_extension = strtolower(substr(strrchr($filename2,"."),1));
+//$file_extension = strtolower(substr(strrchr($filename2,"."),1));
 
 if( $filename2 == "" ) {
   echo "ERROR: download file NOT SPECIFIED. USE download.php?file=filepath";

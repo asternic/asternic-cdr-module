@@ -94,8 +94,6 @@ function envia() {
     document.forms.asternic_cdr_form.start.value = fecha_s;
     document.forms.asternic_cdr_form.end.value   = fecha_e;
 
-    console.log(fecha_s);
-
     if(fecha_check_e < fecha_check_s) {
         alert("Invalid date range");
     } else {
