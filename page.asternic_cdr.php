@@ -1608,7 +1608,7 @@ function asternic_home($appconfig) {
 </h2>
 <br/>
 
-<table cellpadding=10 cellspacing=10 border=0>
+<table class='pad10' border=0>
 <thead style='background-color:#dfedf3;'>
 <tr>
    <td>
@@ -1669,7 +1669,7 @@ echo "<a href=\"javascript:setdates('$begin_past2_month', '$end_month')\">";
 echo _('Last three months')."</a><br/>";
 ?>
 <br/>
-<table cellpadding=10 cellspacing=10>
+<table class='pad10'>
 <thead style='background-color:#dfedf3;'>
 <tr>
 <td><?php echo _("Start Date"); ?></td>
