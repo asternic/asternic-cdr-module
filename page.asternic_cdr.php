@@ -1477,10 +1477,11 @@ function asternic_home($appconfig) {
     $sql= "SELECT src,dst,lastapp,substring(channel,1,locate(\"-\",channel,1)-1) AS chan1, ";
     $sql.="substring(dstchannel,1,locate(\"-\",dstchannel,1)-1) AS chan2, ";
     $sql.="billsec, calldate,j1.dial,j2.dial,if(j1.dial is not null and j2.dial is null,'outbound','') as outbound, ";
-    $sql.="if(j1.dial is null and j2.dial is not null,'inbound','') ";
-    $sql.="AS inbound FROM asteriskcdrdb.cdr LEFT JOIN asterisk.devices as j2 on substring(dstchannel,1,locate(\"-\",dstchannel,1)-1) = j2.dial ";
+    $sql.="if(j1.dial is null and j2.dial is not null,'inbound','') AS inbound, ";
+    $sql.="if(j1.dial is not null and j2.dial is not null,'internal','') as internal ";
+    $sql.="FROM asteriskcdrdb.cdr LEFT JOIN asterisk.devices as j2 on substring(dstchannel,1,locate(\"-\",dstchannel,1)-1) = j2.dial ";
     $sql.="LEFT JOIN asterisk.devices as j1 on substring(channel,1,locate(\"-\",channel,1)-1) = j1.dial WHERE calldate>curdate() AND billsec>0 AND disposition='ANSWERED' ";
-    $sql.="HAVING outbound<>'' OR inbound<>'' AND chan2<>'' ORDER BY calldate DESC";
+    $sql.="HAVING (outbound<>'' OR inbound<>'' OR internal<>'') AND chan2<>'' ORDER BY calldate DESC";
 
     $res = $db->query($sql);
 
@@ -1491,9 +1492,11 @@ function asternic_home($appconfig) {
 
     $inbound   = 0;
     $outbound  = 0;
+    $internal  = 0;
     $totaltime = 0;
-    $totalinboundtime = 0;
+    $totalinboundtime  = 0;
     $totaloutboundtime = 0;
+    $totalinternaltime = 0;
     $totalcall = 0;
     $avgtime   = 0;
     $callsfrom = Array();
@@ -1506,16 +1509,22 @@ function asternic_home($appconfig) {
         } else if($row['outbound']<>'') {
             $totaloutboundtime+=$row['billsec'];
             $outbound++;
+        } else if($row['internal']<>'') {
+            $totalinternaltime+=$row['billsec'];
+            $internal++;
         }
-        if(!isset($callsfrom[$row['src']])) {
-            $callsfrom[$row['src']]=1;
-        } else {
-            $callsfrom[$row['src']]++;
+        if($row['internal']=='') {
+            if(!isset($callsfrom[$row['src']])) {
+                $callsfrom[$row['src']]=1;
+            } else {
+                $callsfrom[$row['src']]++;
+            }
         }
     }
     $totalinboundtime = round($totalinboundtime/60,0);
     $totaloutboundtime = round($totaloutboundtime/60,0);
-    $totaltime = $totalinboundtime + $totaloutboundtime;
+    $totalinternaltime = round($totalinternaltime/60,0);
+    $totaltime = $totalinboundtime + $totaloutboundtime + $totalinternaltime;
 
     if($inbound>0) { 
         $avgtimein  = round($totalinboundtime / $inbound,2);
@@ -1528,6 +1537,13 @@ function asternic_home($appconfig) {
     } else {
         $avgtimeout = 0;
     }
+
+    if($internal>0) { 
+        $avgtimeinternal = round($totalinternaltime / $internal,2);
+    } else {
+        $avgtimeinternal = 0;
+    }
+
 
     require_once("menu.php");
 ?>
@@ -1563,6 +1579,10 @@ function asternic_home($appconfig) {
                    <td><?php echo $outbound?></td>
                 </tr>
                 <tr>
+                   <td><?php echo _('Total Internal Calls')?>:</td>
+                   <td><?php echo $internal?></td>
+                </tr>
+                <tr>
                    <td><?php echo _('Unique Callers')?>:</td>
                    <td><?php echo count($callsfrom); ?></td>
                 </tr>
@@ -1586,12 +1606,20 @@ function asternic_home($appconfig) {
                   <td><?php echo $totaloutboundtime ?> </td>
                 </tr>
                 <tr>
+                  <td><?php echo _('Total Internal Minutes')?>:</td>
+                  <td><?php echo $totalinternaltime ?> </td>
+                </tr>
+                <tr>
                   <td><?php echo _('Average Inbound Call Duration')?>:</td>
                   <td><?php echo $avgtimein." "._('minutes')  ?> </td>
                 </tr>
                 <tr>
                   <td><?php echo _('Average Outbound Call Duration')?>:</td>
                   <td><?php echo $avgtimeout." "._('minutes')  ?> </td>
+                </tr>
+                <tr>
+                  <td><?php echo _('Average Internal Call Duration')?>:</td>
+                  <td><?php echo $avgtimeinternal." "._('minutes')  ?> </td>
                 </tr>
                 </tbody>
                 </table>
