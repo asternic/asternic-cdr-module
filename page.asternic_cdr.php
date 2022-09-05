@@ -1639,9 +1639,9 @@ function asternic_home($appconfig) {
 <table class='pad10' border=0>
 <thead style='background-color:#dfedf3;'>
 <tr>
-   <td>
+   <td style='width:40%;'>
     <?php echo _('Available'); ?><br/>
-    <select size=10 name="List_Extensions_available" multiple="multiple" id="myform_List_Extensions_from" style="height: 100px;width: 125px;" onDblClick="List_move_around('right',false);" >
+    <select name="List_Extensions_available" multiple="multiple" id="myform_List_Extensions_from" style="height: 100px;width: 100%;" onDblClick="List_move_around('right',false);" >
 <?php    
 foreach($appconfig['canals'] as $canall=>$canalname) {
     if($canall <> "NONE" && !in_array($canall,$items_extension) && $appconfig['extension']<>"''") {
@@ -1651,7 +1651,8 @@ foreach($appconfig['canals'] as $canall=>$canalname) {
 ?>
     </select>
 </td>
-<td align="left">
+<td align="middle" style='width:10%;'>
+<br><br>
         <a href='#' onclick="List_move_around('right',false); return false;"><img src='<?php echo $appconfig['relative_path'];?>asternic_go-next.png' width=16 height=16 border=0></a>
         <a href='#' onclick="List_move_around('left', false); return false;"><img src='<?php echo $appconfig['relative_path'];?>asternic_go-previous.png' width=16 height=16 border=0></a>
         <br>
@@ -1659,9 +1660,9 @@ foreach($appconfig['canals'] as $canall=>$canalname) {
         <a href='#' onclick="List_move_around('right', true); return false;"><img src='<?php echo $appconfig['relative_path'];?>asternic_go-last.png' width=16 height=16 border=0></a>
         <a href='#' onclick="List_move_around('left', true); return false;"><img src='<?php echo $appconfig['relative_path'];?>asternic_go-first.png' width=16 height=16 border=0></a>
 </td>
-<td>
+<td style='width:40%;'>
     <?php echo _('Selected')?><br/>
-    <select size=10 name="List_Extensions[]" multiple="multiple" style="height: 100px;width: 125px;" id="myform_List_Extensions_to" onDblClick="List_move_around('left',false);" >
+    <select size=10 name="List_Extensions[]" multiple="multiple" style="height: 100px;width: 100%;" id="myform_List_Extensions_to" onDblClick="List_move_around('left',false);" >
         <?php
         if($appconfig['extension'] == "''") {
             foreach($appconfig['canals'] as $canall=>$canalname) {
