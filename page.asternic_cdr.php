@@ -1788,7 +1788,7 @@ echo _('Last three months')."</a><br/>";
 <div style="clear: both;">&nbsp;</div>
 <div id='rest'>
 <br/>
-<input type=submit name='runreport' value='<?php echo _('Run Report')?>' onClick='return envia();'>
+<input type=submit name='runreport' class='button is-small is-rounded' value='<?php echo _('Run Report')?>' onClick='return envia();'>
 </div> <!-- end div rest submit button -->
 </form>
 </div> <!-- end div asterniccontents green -->
