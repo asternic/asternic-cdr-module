@@ -505,7 +505,7 @@ function asternic_distribution($appconfig) {
 <div style='float:right;'><a href='https://www.asternic.net' border=0><img src='<?php echo $appconfig['relative_path'];?>/asternic_cdr_logo.jpg' alt='asternic cdr' border=0></a></div>
 </div>
 </div> <!-- end div asternic content -->
-<div style='clear:both;'></div>
+<div style='clear:both;' class='content'></div>
 <?php
 
 } // end function distribution
@@ -972,7 +972,7 @@ if($total_calls>0) {
 <div style='float:right;'><a href='https://www.asternic.net' border=0><img src='<?php echo $appconfig['relative_path'];?>asternic_cdr_logo.jpg' alt='asternic cdr' border=0></a></div>
 </div>
 </div> <!-- end div asternic content -->
-<div style='clear:both;'></div>
+<div style='clear:both;' class='content'></div>
 <?php
 } // end function inbound/outbound
 
@@ -1380,7 +1380,7 @@ if($total_calls>0) {
 <div style='float:right;'><a href='https://www.asternic.net' border=0><img src='<?php echo $appconfig['relative_path'];?>asternic_cdr_logo.jpg' alt='asternic cdr' border=0></a></div>
 </div>
 </div> <!-- end div asternic content -->
-<div style='clear:both;'></div>
+<div style='clear:both;' class='content'></div>
 <?php
 } // end function outgoing
 
@@ -1798,7 +1798,7 @@ echo _('Last three months')."</a><br/>";
 <div style='float:right;'><a href='https://www.asternic.net' border=0><img src='<?php echo $appconfig['relative_path'];?>asternic_cdr_logo.jpg' alt='asternic cdr' border=0></a></div>
 </div> <!-- end div asternicfooter -->
 </div> <!-- end div asternic content -->
-<div style='clear:both;'></div>
+<div style='clear:both;' class='content'></div>
 <?php
 } // end function asternic_home
 ?>
