@@ -164,10 +164,10 @@ function print_exports($header_pdf,$data_pdf,$width_pdf,$title_pdf,$cover_pdf,$a
     echo "<input type='hidden' name='width' value='".$width_serial."' />\n";
     echo "<input type='hidden' name='title' value='".$title_serial."' />\n";
     echo "<input type='hidden' name='cover' value='".$cover_serial."' />\n";
-    echo "<a href='javascript:void()' class='info'><input type=image name='pdf' src='${appconfig['relative_path']}asternic_pdf.gif' style='border:0;'><span>";
+    echo "<a href='javascript:void()' class='info'><input type=image name='pdf' src='{$appconfig['relative_path']}asternic_pdf.gif' style='border:0;'><span>";
     echo _('Export to PDF');
     echo "</span></a>\n";
-    echo "<a href='javascript:void()' class='info'><input type=image name='csv' src='${appconfig['relative_path']}asternic_excel.gif' style='border:0;'><span>"; 
+    echo "<a href='javascript:void()' class='info'><input type=image name='csv' src='{$appconfig['relative_path']}asternic_excel.gif' style='border:0;'><span>"; 
     echo _('Export to CSV/Excel');
     echo "</span></a>\n";
     echo "</form>";
@@ -314,7 +314,7 @@ function asternic_getrecords( $MYVARS ,$appconfig) {
         } 
     }
 
-    echo "<table width='99%' cellpadding=3 cellspacing=3 border=0 id='table${channel}' class='sortable'>\n";
+    echo "<table width='99%' cellpadding=3 cellspacing=3 border=0 id='table{$channel}' class='sortable'>\n";
     echo "<thead><tr><td bgcolor='#ddcc00'>#</td>";
     if($gtype=='combined') {
         echo "<td bgcolor='#ddcc00'>Direction</td>";
