@@ -534,13 +534,80 @@ function inbound_outbound($type,$appconfig) {
     }
 
     $total_calls = 0;
+    $total_calls_outbound = 0;
+    $total_calls_inbound = 0;
     $total_bill  = 0;
+    $total_bill_outbound  = 0;
+    $total_bill_inbound  = 0;
     $total_ring  = 0;
+    $total_ring_outbound  = 0;
+    $total_ring_inbound  = 0;
+
+    $group_bill_outbound = array();
+    $group_bill_inbound = array();
+    $group_ring_outbound = array();
+    $group_ring_inbound = array();
+    $group_calls_outbound = array();
+    $group_calls = array();
+    $group_ring = array();
+    $group_bill = array();
+    $group_calls_inbound = array();
+    $ringing_outbound = array();
+    $ringing_inbound = array();
+    $ringing = array();
+    $billsec = array();
+    $duration = array();
+    $number_calls_outbound = array();
+    $number_calls_inbound = array();
+    $number_calls = array();
 
     //while ($res->fetchInto($row, DB_FETCHMODE_ASSOC)) {
     while (is_array($row = $res->fetchRow(DB_FETCHMODE_ASSOC))) {
 
         $row['accountcode']="Default";
+
+        if(!isset($group_bill_outbound[$row['accountcode']])) {
+            $group_bill_outbound[$row['accountcode']]=0;
+        }
+        if(!isset($group_ring_outbound[$row['accountcode']])) {
+            $group_ring_outbound[$row['accountcode']]=0;
+        }
+        if(!isset($group_calls_outbound[$row['accountcode']])) {
+            $group_calls_outbound[$row['accountcode']]=0;
+        }
+        if(!isset($group_bill_inbound[$row['accountcode']])) {
+            $group_bill_inbound[$row['accountcode']]=0;
+        }
+        if(!isset($group_ring_inbound[$row['accountcode']])) {
+            $group_ring_inbound[$row['accountcode']]=0;
+        }
+        if(!isset($group_calls_inbound[$row['accountcode']])) {
+            $group_calls_inbound[$row['accountcode']]=0;
+        }
+        if(!isset($ringing_outbound[$row['accountcode']])) {
+            $ringing_outbound[$row['accountcode']]=array();
+        }
+        if(!isset($ringing_inbound[$row['accountcode']])) {
+            $ringing_inbound[$row['accountcode']]=array();
+        }
+        if(!isset($ringing[$row['accountcode']])) {
+            $ringing[$row['accountcode']]=array();
+        }
+        if(!isset($billsec[$row['accountcode']])) {
+            $billsec[$row['accountcode']]=array();
+        }
+        if(!isset($duration[$row['accountcode']])) {
+            $duration[$row['accountcode']]=array();
+        }
+        if(!isset($number_calls_outbound[$row['accountcode']])) {
+            $number_calls_outbound[$row['accountcode']]=array();
+        }
+        if(!isset($number_calls_inbound[$row['accountcode']])) {
+            $number_calls_inbound[$row['accountcode']]=array();
+        }
+        if(!isset($number_calls[$row['accountcode']])) {
+            $number_calls[$row['accountcode']]=array();
+        }
 
         if(!in_array($row['accountcode'],$appconfig['departments'])) {
             array_push($appconfig['departments'],$row['accountcode']);
@@ -556,6 +623,9 @@ function inbound_outbound($type,$appconfig) {
             $ringing[$row['accountcode']][$row['chan1']]      = 0;
             $number_calls_outbound[$row['accountcode']][$row['chan1']] = 0;
             $missed_outbound[$row['accountcode']][$row['chan1']]       = 0;
+            $ringing_inbound[$row['accountcode']][$row['chan1']]      = 0;
+            $number_calls_inbound[$row['accountcode']][$row['chan1']] = 0;
+            $missed_inbound[$row['accountcode']][$row['chan1']]       = 0;
         }
 
         if(!isset($number_calls_outbound[$row['accountcode']][$row['chan1']])) {
@@ -617,6 +687,49 @@ function inbound_outbound($type,$appconfig) {
 
         $row['accountcode']="Default";
 
+        if(!isset($group_bill_outbound[$row['accountcode']])) {
+            $group_bill_outbound[$row['accountcode']]=0;
+        }
+        if(!isset($group_ring_outbound[$row['accountcode']])) {
+            $group_ring_outbound[$row['accountcode']]=0;
+        }
+        if(!isset($group_calls_outbound[$row['accountcode']])) {
+            $group_calls_outbound[$row['accountcode']]=0;
+        }
+        if(!isset($group_bill_inbound[$row['accountcode']])) {
+            $group_bill_inbound[$row['accountcode']]=0;
+        }
+        if(!isset($group_ring_inbound[$row['accountcode']])) {
+            $group_ring_inbound[$row['accountcode']]=0;
+        }
+        if(!isset($group_calls_inbound[$row['accountcode']])) {
+            $group_calls_inbound[$row['accountcode']]=0;
+        }
+        if(!isset($ringing_outbound[$row['accountcode']])) {
+            $ringing_outbound[$row['accountcode']]=array();
+        }
+        if(!isset($ringing_inbound[$row['accountcode']])) {
+            $ringing_inbound[$row['accountcode']]=array();
+        }
+        if(!isset($ringing[$row['accountcode']])) {
+            $ringing[$row['accountcode']]=array();
+        }
+        if(!isset($billsec[$row['accountcode']])) {
+            $billsec[$row['accountcode']]=array();
+        }
+        if(!isset($duration[$row['accountcode']])) {
+            $duration[$row['accountcode']]=array();
+        }
+        if(!isset($number_calls_outbound[$row['accountcode']])) {
+            $number_calls_outbound[$row['accountcode']]=array();
+        }
+        if(!isset($number_calls_inbound[$row['accountcode']])) {
+            $number_calls_inbound[$row['accountcode']]=array();
+        }
+        if(!isset($number_calls[$row['accountcode']])) {
+            $number_calls[$row['accountcode']]=array();
+        }
+
         if(!in_array($row['accountcode'],$appconfig['departments'])) {
             array_push($appconfig['departments'],$row['accountcode']);
             $group_bill_inbound[$row['accountcode']]  = 0;
@@ -673,15 +786,16 @@ function inbound_outbound($type,$appconfig) {
             $missed_inbound[$row['accountcode']][$row['chan1']]++;
             $missed[$row['accountcode']][$row['chan1']]++;
         }
+
+        $group_calls['Default'] = $group_calls_inbound[$row['accountcode']] + $group_calls_outbound[$row['accountcode']];
+        $group_ring['Default']  = $group_ring_inbound[$row['accountcode']] + $group_ring_outbound[$row['accountcode']];
+        $group_bill['Default']  = $group_bill_inbound[$row['accountcode']] + $group_bill_outbound[$row['accountcode']];
+
     }
 
     $total_calls = $total_calls_inbound + $total_calls_outbound;
     $total_ring  = $total_ring_inbound + $total_ring_outbound;
     $total_bill  = $total_bill_inbound + $total_bill_outbound;
-
-    $group_calls['Default'] = $group_calls_inbound[$row['accountcode']] + $group_calls_outbound[$row['accountcode']];
-    $group_ring['Default']  = $group_ring_inbound[$row['accountcode']] + $group_ring_outbound[$row['accountcode']];
-    $group_bill['Default']  = $group_bill_inbound[$row['accountcode']] + $group_bill_outbound[$row['accountcode']];
 
     if($total_calls > 0) {
         $avg_ring_full = $total_ring / $total_calls;
@@ -842,7 +956,7 @@ if($total_calls>0) {
            $query3="";
 
            foreach($key as $chan=>$val) {
-
+                if($chan=='') continue;
                 $contavar = $contador +1;
                 $cual = $contador % 2;
                 if($cual>0) { $odd = " class='odd' "; } else { $odd = ""; }
@@ -926,6 +1040,7 @@ if($total_calls>0) {
                 $contador++;
 
            }
+           $tagA='';$tagB='';
            //$query1.="title=".$rep_title."$graphcolor";
            $query1.="title="._($rep_title)."$graphcolorstack&tagA="._('Completed')."&tagB="._('Missed');
            $query2.="title="._('Total Call Duration by User')."$graphcolor";

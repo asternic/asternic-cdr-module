@@ -156,7 +156,9 @@ function print_exports($header_pdf,$data_pdf,$width_pdf,$title_pdf,$cover_pdf,$a
     $complete_self = $_SERVER['REQUEST_URI'];
     echo "<br/><form method='post' action='$complete_self'>\n";
     foreach($_REQUEST as $kkey=>$vval) {
-        echo "<input type='hidden' name='$kkey' value='".$vval."' />\n";
+        if(!is_array($vval)) {
+            echo "<input type='hidden' name='$kkey' value='".$vval."' />\n";
+        }
     }
     echo "<input type='hidden' name='action' value='export' />\n";
     echo "<input type='hidden' name='head' value='".$head_serial."' />\n";
