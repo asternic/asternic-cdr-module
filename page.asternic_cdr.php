@@ -459,6 +459,7 @@ function asternic_distribution($appconfig) {
                     if(!isset($num[$chann][$date][$hour])) { $num[$chann][$date][$hour]=0;}
                     $numcolor = intval(($dur[$chann][$date][$hour]/60)/10);
                     if((intval($dur[$chann][$date][$hour]/60))==0) { $numcolor=6; }
+                    if($numcolor > 6) { $numcolor = 6; }
                     $minutes_this_hour = intval($dur[$chann][$date][$hour]/60);
                     $total_day+=$minutes_this_hour;
                     echo "<td bgcolor='$colorete[$numcolor]'>$minutes_this_hour</td>";
@@ -488,6 +489,7 @@ function asternic_distribution($appconfig) {
                 // echo "$hour ".intval($dur[$chann][$date][$hour]/60)." - ".$num[$chann][$date][$hour]."<BR>" ;
                 $numcolor = intval(($dur[$chann][$date][$hour]/60)/10);
                 if((intval($dur[$chann][$date][$hour]/60))==0) { $numcolor=6; }
+                if($numcolor > 6) { $numcolor = 6; }
                 $minutes_this_hour = intval($dur[$chann][$date][$hour]/60);
                 $total_day+=$minutes_this_hour;
                 echo "<td bgcolor='$colorete[$numcolor]'>$minutes_this_hour</td>";
@@ -939,6 +941,7 @@ if($total_calls>0) {
                                _('Calls'),
                                _('Incoming'),
                                _('Outgoing'),
+                               _('Completed'),
                                _('Missed'),
                                _('Percent'),
                                _('Bill secs'),
@@ -947,7 +950,7 @@ if($total_calls>0) {
                                _('Ring Time'),
                                _('Avg. Ring')
             );
-            $width_pdf=array(35,15,10,10,15,15,25,20,20,20,20);
+            $width_pdf=array(35,15,10,10,15,15,15,25,20,20,20,20);
             $title_pdf=$rep_title;
 
            $contador=0;
@@ -997,7 +1000,7 @@ if($total_calls>0) {
                 }
                 $percent_missed = number_format($percent_missed,0)." "._('%');
 
-                $complete_self = $_SERVER['REQUEST_URI'];
+                $complete_self = htmlspecialchars($_SERVER['REQUEST_URI'], ENT_QUOTES, 'UTF-8');
                 echo "<tr $odd>\n";
 
                 echo "<td style='text-align: left;'><a style='cursor:pointer;' onclick=\"javascript:getRecords('$chan','${appconfig['start']}','${appconfig['end']}','combined','$complete_self');\">";
@@ -1407,7 +1410,7 @@ if($total_calls>0) {
                 }
                 $percent_missed = number_format($percent_missed,0)." "._('%');
 
-                $complete_self = $_SERVER['REQUEST_URI'];
+                $complete_self = htmlspecialchars($_SERVER['REQUEST_URI'], ENT_QUOTES, 'UTF-8');
                 //$complete_self .= "&chan=$chan&startd=$start&endd=$end&direction=$typerecord";
                 echo "<tr $odd>\n";
 

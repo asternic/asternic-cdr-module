@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 if(isset($_SERVER['PATH_INFO'])) {
     define("SELF",  substr($_SERVER['PHP_SELF'], 0, (strlen($_SERVER['PHP_SELF']) - @strlen($_SERVER['PATH_INFO']))));
@@ -106,40 +106,6 @@ type: 'bar',
 <?php
 }
 
-function swf_bar_old($values,$width,$height,$divid,$stack) {
-    global $config;
-
-    if ($stack==1) {
-        $chart = "images/barstack.swf";
-    } else {
-        $chart = "images/bar.swf";
-    }
-    $return = "<div id='$divid'>\n";
-    $return.= "</div>\n";
-    $values = html_entity_decode($values);
-    $return.= "<script type='text/javascript'>\n";
-    $return.='$(document).ready(function() {'."\n";
-
-    $variables = preg_split("/&/",$values);
-    if(isset($config['no_animation'][''])) {
-        $variables[] = "noanimate=1";
-    }
-
-    $return .= "var flashvars = {\n";
-    $param = Array();
-    foreach($variables as $deauna) {
-        $pedazos = preg_split("/=/",$deauna);
-        $param[]="'$pedazos[0]': '$pedazos[1]'";
-    }
-    $texti = implode(",\n",$param);
-    $return.=$texti;
-    $return.=" };\n";
-
-    $return.= "swfobject.embedSWF('$chart', '$divid', '$width', '$height', '9.0.0', '#336699', flashvars, {wmode:'transparent'});\n";
-    $return.= "});</script>\n";
-    echo $return;
-}
-
 function print_exports($header_pdf,$data_pdf,$width_pdf,$title_pdf,$cover_pdf,$appconfig) {
 
     $head_serial  = serialize($header_pdf);
@@ -153,11 +119,13 @@ function print_exports($header_pdf,$data_pdf,$width_pdf,$title_pdf,$cover_pdf,$a
     $title_serial = rawurlencode($title_serial);
     $cover_serial = rawurlencode($cover_serial);
 
-    $complete_self = $_SERVER['REQUEST_URI'];
+    $complete_self = htmlspecialchars($_SERVER['REQUEST_URI'], ENT_QUOTES, 'UTF-8');
     echo "<br/><form method='post' action='$complete_self'>\n";
     foreach($_REQUEST as $kkey=>$vval) {
         if(!is_array($vval)) {
-            echo "<input type='hidden' name='$kkey' value='".$vval."' />\n";
+            $safe_key = htmlspecialchars($kkey, ENT_QUOTES, 'UTF-8');
+            $safe_val = htmlspecialchars($vval, ENT_QUOTES, 'UTF-8');
+            echo "<input type='hidden' name='$safe_key' value='$safe_val' />\n";
         }
     }
     echo "<input type='hidden' name='action' value='export' />\n";
@@ -169,7 +137,7 @@ function print_exports($header_pdf,$data_pdf,$width_pdf,$title_pdf,$cover_pdf,$a
     echo "<a href='javascript:void()' class='info'><input type=image name='pdf' src='{$appconfig['relative_path']}asternic_pdf.gif' style='border:0;'><span>";
     echo _('Export to PDF');
     echo "</span></a>\n";
-    echo "<a href='javascript:void()' class='info'><input type=image name='csv' src='{$appconfig['relative_path']}asternic_excel.gif' style='border:0;'><span>"; 
+    echo "<a href='javascript:void()' class='info'><input type=image name='csv' src='{$appconfig['relative_path']}asternic_excel.gif' style='border:0;'><span>";
     echo _('Export to CSV/Excel');
     echo "</span></a>\n";
     echo "</form>";
@@ -185,7 +153,7 @@ function seconds2minutes($segundos) {
 
 function remove_quotes($argument) {
     return substr($argument,1,-1);
-}   
+}
 
 function asternic_download() {
     include("download.php");
@@ -232,8 +200,8 @@ function asternic_getrecords( $MYVARS ,$appconfig) {
         die($res->getMessage());
     }
 
-    $ftype = isset($_REQUEST['type']?$_REQUEST['type']:'');
-    $fdisplay = $_REQUEST['display'];
+    $ftype = $_REQUEST['type'] ?? 'tool';
+    $fdisplay = $_REQUEST['display'] ?? 'asternic_cdr';
     $ftab = $gtype;
 
     $cont=0;
@@ -294,17 +262,32 @@ function asternic_getrecords( $MYVARS ,$appconfig) {
             $uni = $row['uniqueid'];
             $uni = str_replace(".","",$uni);
 
-            if($row['recordingfile']<>"") {
-                if(!preg_match("/^\//",$row['recordingfile'])) {
-                    $actualfile = "$year/$month/$day/".$row['recordingfile'];
+            $actualfile = $row['recordingfile'] ?? '';
+            if($actualfile == "") {
+                // FreePBX 17 may not populate recordingfile for outgoing calls.
+                // Try CEL session data first, then fall back to disk search by uniqueid.
+                $celrec = $_SESSION['cel']['recordings'][$row['uniqueid']]['file'] ?? '';
+                if($celrec != "") {
+                    $actualfile = $celrec;
                 } else {
-                    $actualfile = $row['recordingfile'];
+                    $datepath = sprintf("/var/spool/asterisk/monitor/%04d/%02d/%02d/", $year, $month, $day);
+                    $matches = glob($datepath . "*" . $row['uniqueid'] . ".wav");
+                    if($matches && count($matches) > 0) {
+                        $actualfile = $matches[0];
+                    }
+                }
+            }
+            if($actualfile != "") {
+                if(!preg_match("/^\//",$actualfile)) {
+                    $actualfile = "$year/$month/$day/".$actualfile;
                 }
                 $detail[$campo].="<a href=\"javascript:void(0);\" onclick='javascript:playVmail(\"".$actualfile."\",\"play".$uni."\");'>";
                 $detail[$campo].="<div class='playicon' title='"._('Play')."' id='play".$uni."'  style='float:left;'>";
                 $detail[$campo].="<img src='images/blank.gif' alt='pixel' height='16' width='16' border='0'>";
                 $detail[$campo].="</div></a>";
-                $detail[$campo].="<a href=\"javascript:void(0); return false;\" onclick='javascript:downloadVmail(\"".$actualfile."\",\"play".$uni."\",\"$ftype\",\"$fdisplay\",\"$ftab\"); return false;'>";
+                $safe_ftype = htmlspecialchars($ftype, ENT_QUOTES, 'UTF-8');
+                $safe_fdisplay = htmlspecialchars($fdisplay, ENT_QUOTES, 'UTF-8');
+                $detail[$campo].="<a href=\"javascript:void(0); return false;\" onclick='javascript:downloadVmail(\"".$actualfile."\",\"play".$uni."\",\"$safe_ftype\",\"$safe_fdisplay\",\"$ftab\"); return false;'>";
                 $detail[$campo].="<div class='downicon' title='"._('Download')."' id='dload".$uni."'  style='float:left;'>";
                 $detail[$campo].="<img src='images/blank.gif' alt='pixel' height='16' width='16' border='0'>";
                 $detail[$campo].="</div></a>";
@@ -313,7 +296,7 @@ function asternic_getrecords( $MYVARS ,$appconfig) {
             }
             $detail[$campo].= "</td>\n";
             $detail[$campo].= "\n</tr>\n";
-        } 
+        }
     }
 
     echo "<table width='99%' cellpadding=3 cellspacing=3 border=0 id='table{$channel}' class='sortable'>\n";
@@ -331,7 +314,7 @@ function asternic_getrecords( $MYVARS ,$appconfig) {
     echo "<tbody>".$detail[$channel]."</tbody>\n";
     echo "</table>\n";
 
-    $complete_self = $_SERVER['REQUEST_URI'];
+    $complete_self = htmlspecialchars($_SERVER['REQUEST_URI'], ENT_QUOTES, 'UTF-8');
     echo "<form id='downloadform' method='get' action='$complete_self'><input type=hidden name='file' id='downloadfile' value=''><input type=hidden name='action' value='download'><input type='hidden' name='type' id='dtype' value=''><input type='hidden' id='idisplay' name='display' value=''> <input type='hidden' id='itab' name='tab' value=''></form>";
 
 }
@@ -350,7 +333,8 @@ class PDF extends FPDF
         //Select Arial italic 8
         $this->SetFont('Arial','I',8);
         //Print centered page number
-        $this->Cell(0,10,$lang["$language"]['page'].' '.$this->PageNo(),0,0,'C');
+        $pageText = (isset($lang[$language]) ? ($lang[$language]['page'] ?? 'Page') : 'Page') . ' ' . $this->PageNo();
+        $this->Cell(0,10,$pageText,0,0,'C');
     }
 
     function Cover($cover) {
@@ -398,7 +382,9 @@ class PDF extends FPDF
         foreach($data as $row) {
             $contador=0;
             foreach($row as $valor) {
-                $this->Cell($w[$contador],6,$valor,'LR',0,'C',$fill);
+                if(isset($w[$contador])) {
+                    $this->Cell($w[$contador],6,$valor,'LR',0,'C',$fill);
+                }
                 $contador++;
             }
             $this->Ln();

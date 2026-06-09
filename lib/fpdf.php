@@ -1258,8 +1258,7 @@ function _putfonts()
 function _putimages()
 {
 	$filter=($this->compress) ? '/Filter /FlateDecode ' : '';
-	reset($this->images);
-	while(list($file,$info)=each($this->images))
+	foreach($this->images as $file=>$info)
 	{
 		$this->_newobj();
 		$this->images[$file]['n']=$this->n;
